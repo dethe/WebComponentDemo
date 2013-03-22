@@ -101,6 +101,8 @@
           if(document.querySelectorAll("webmaker-media").length > 0) {
             var start = this.attributes.getNamedItem("start").nodeValue;
             var end = this.attributes.getNamedItem("end").nodeValue;
+
+            console.log("media found");
  
             // do template replacing
             this.innerHTML = "";
