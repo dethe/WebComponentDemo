@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>A Web Components test</title>
+    <script src="platform/WebComponents/web-components.js"></script>
+    <script src="platform/CustomElements/custom-elements.js"></script>
+    <!--
+    <link rel="component" href="webmaker-components.html">
+    -->
+    <style>
+      webmaker-video { display: none; }
+
+      webmaker-footnote {
+        display: block;
+        margin: 1em 0;
+      }
+    </style>
+  <body>
+
+    <h1>Who likes red pandas?</h1>
+
+    <webmaker-video href="http://www.youtube.com/watch?v=7jWYUtQZhK0">
+      cute red panda!
+    </webmaker-video>
+
+    <webmaker-footnote start="0" end="10">Alright, so here's the deal. I love red pandas. This is not particularly
+      a secret, and it's not very hard to see why. They're ridiculously cute,
+      look very fluffy, and seem very playful.
+    </webmaker-footnote>
+
+    <webmaker-footnote start="10" end="13">They're also incredibly endangered in the wild.</webmaker-footnote>
+
+    <webmaker-footnote start="13" end="23">To be fair, they're ridiculous animals from a zoological point of view.
+      The red panda has a body plan designed for predation, but instead it
+      eats mostly bamboo leaves.</webmaker-footnote>
+
+    <webmaker-footnote start="23" end="33">Bamboo is hard to digest, has very little nutritional value (so you need
+      to eat a LOT of it in a day), and covers a wide area for the the energy
+      you get out of it. So it's really silly as a foodsource.</webmaker-footnote>
+  </body>
+</html>
