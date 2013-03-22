@@ -1,0 +1,127 @@
+<!-- our master element makes sure popcorn gets loaded -->
+<element name="webmaker-popcorn">
+  <script>
+    // load popcorn if we don't have it available already
+    if(!window.Popcorn) {
+      var popcorn = document.createElement("script");
+      popcorn.src = "http://cdn.popcornjs.org/code/dist/popcorn-complete.js";
+      document.head.appendChild(popcorn);
+      console.log("added popcorn");
+    }
+  </script>
+</element>
+
+<!--
+  The webmaker video component sets up a popcorn'd video
+  container 
+-->
+<element name="webmaker-video" attributes="href">
+  <template>
+    <style scoped>
+      webmaker-video {
+        display: block;
+        width: 400px;
+        height: 300px;
+      }
+    </style>
+    <div class="webmaker-video">
+      <div class="container"></div>
+      <div id="footnote"></div>
+    </div>
+  </template>
+
+  <script>
+    var getNextCount = (function() {
+      var webmakerVideoElementCount = 0;
+      return function() {
+        return webmakerVideoElementCount++;
+      };
+    }());
+
+    var template = this.querySelector("element[name='webmaker-video'] template");
+    this.register({
+      prototype: {
+        readyCallback: function() {
+
+          // do template replacing
+          var ocontent = this.textContent;
+          var ihtml = template.innerHTML;
+          var newContent = ihtml.replace("<content></content>",ocontent);        
+          this.innerHTML = newContent;
+
+          var id = getNextCount();
+          var videoElement = this.querySelector(".container");
+          videoElement.id = "webmakerVideo" + id;
+
+          var footnote = this.querySelector("#footnote");
+          footnote.id = footnote.id + id;
+
+          // register with popcorn, once available
+          var registerMe = (function(containerId, url) {
+            return function() {
+              var pop = Popcorn.smart(containerId, url);
+              pop.footnoteId = footnote.id;
+              pop.play();
+              window.pop = pop;
+            }
+          }("#" + videoElement.id, this.attributes.getNamedItem("href").nodeValue));
+
+          (function tryPopcorn() {
+            if(window.Popcorn) { Popcorn(registerMe); }
+            else { setTimeout(tryPopcorn, 500); }
+          }());
+
+        }
+      }
+    });
+  </script>
+</element>
+
+<!--
+  text pop event.
+-->
+<element name="webmaker-footnote" attributes="start end">
+  <template>
+    <style scoped>
+      webmaker-pop { display: none; }
+    </style>
+    <content></content>
+  </template>
+  <script>
+    var template = this.querySelector("template");
+    this.register({
+      prototype: {
+        readyCallback: function() {
+          var start = this.attributes.getNamedItem("start").nodeValue;
+          var end = this.attributes.getNamedItem("end").nodeValue;
+          var text = this.textContent;
+
+          // do template replacing
+          this.innerHTML = "";
+
+          // register a text pop event
+          var addEvent = function() {
+            window.pop.footnote({
+              start: start,
+              end: end,
+              text: text,
+              target: window.pop.footnoteId
+            });
+          };
+
+          (function tryPopcorn() {
+            if(window.pop) { addEvent(); }
+            else { setTimeout(tryPopcorn, 500); }
+          }());
+        }
+      }
+    });
+  </script>
+</element>
+
+
+
+
+
+
+
