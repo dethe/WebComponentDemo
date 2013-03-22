@@ -94,8 +94,7 @@
         readyCallback: function() {
           var start = this.attributes.getNamedItem("start").nodeValue;
           var end = this.attributes.getNamedItem("end").nodeValue;
-          var parent = this.parentNode;
-          var text = parent.textContent;
+          var text = this.textContent;
 
           // do template replacing
           this.innerHTML = "";

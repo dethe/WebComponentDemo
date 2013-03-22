@@ -3,9 +3,6 @@
   <head>
     <meta charset="utf-8">
     <title>A Web Components test</title>
-    <script src="platform/WebComponents/web-components.js"></script>
-    <script src="platform/CustomElements/custom-elements.js"></script>
-    <link rel="component" href="webmaker-components.html">
     <style>
       webmaker-video { display: none; }
 
@@ -14,6 +11,7 @@
         margin: 1em 0;
       }
     </style>
+    <link rel="component" href="webmaker-components.html">
   <body>
 
     <h1>Who likes red pandas?</h1>
@@ -22,19 +20,23 @@
       cute red panda!
     </webmaker-video>
 
-    <p><webmaker-footnote start="0" end="10"/>Alright, so here's the deal. I love red pandas. This is not particularly
+    <webmaker-footnote start="0" end="10">Alright, so here's the deal. I love red pandas. This is not particularly
       a secret, and it's not very hard to see why. They're ridiculously cute,
       look very fluffy, and seem very playful.
-    </p>
+    </webmaker-footnote>
 
-    <p><webmaker-footnote start="10" end="13"/>They're also incredibly endangered in the wild.</p>
+    <webmaker-footnote start="10" end="13">They're also incredibly endangered in the wild.</webmaker-footnote>
 
-    <p><webmaker-footnote start="13" end="23"/>To be fair, they're ridiculous animals from a zoological point of view.
+    <webmaker-footnote start="13" end="23">To be fair, they're ridiculous animals from a zoological point of view.
       The red panda has a body plan designed for predation, but instead it
-      eats mostly bamboo leaves.</p>
+      eats mostly bamboo leaves.</webmaker-footnote>
 
-    <p><webmaker-footnote start="23" end="33"/>Bamboo is hard to digest, has very little nutritional value (so you need
+    <webmaker-footnote start="23" end="33">Bamboo is hard to digest, has very little nutritional value (so you need
       to eat a LOT of it in a day), and covers a wide area for the the energy
-      you get out of it. So it's really silly as a foodsource.</p>
+      you get out of it. So it's really silly as a foodsource.</webmaker-footnote>
   </body>
+
+  <!-- temporary polyfill, used until browsers fully implement web components -->
+  <script src="platform/WebComponents/web-components.js"></script>
+  <script src="platform/CustomElements/custom-elements.js"></script>
 </html>

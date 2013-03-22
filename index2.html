@@ -3,23 +3,31 @@
   <head>
     <meta charset="utf-8">
     <title>A Web Components test</title>
+    <style>
+      webmaker-video { display: none; }
+
+      webmaker-footnote {
+        display: block;
+        margin: 1em 0;
+      }
+    </style>
   <body>
 
     <h1>Who likes red pandas?</h1>
 
-    <p>Alright, so here's the deal. I love red pandas. This is not particularly
+    <webmaker-footnote>Alright, so here's the deal. I love red pandas. This is not particularly
       a secret, and it's not very hard to see why. They're ridiculously cute,
       look very fluffy, and seem very playful.
-    </p>
+    </webmaker-footnote>
 
-    <p>They're also incredibly endangered in the wild.</p>
+    <webmaker-footnote>They're also incredibly endangered in the wild.</webmaker-footnote>
 
-    <p>To be fair, they're ridiculous animals from a zoological point of view.
+    <webmaker-footnote>To be fair, they're ridiculous animals from a zoological point of view.
       The red panda has a body plan designed for predation, but instead it
-      eats mostly bamboo leaves.</p>
+      eats mostly bamboo leaves.</webmaker-footnote>
 
-    <p>Bamboo is hard to digest, has very little nutritional value (so you need
+    <webmaker-footnote>Bamboo is hard to digest, has very little nutritional value (so you need
       to eat a LOT of it in a day), and covers a wide area for the the energy
-      you get out of it. So it's really silly as a foodsource.</p>
+      you get out of it. So it's really silly as a foodsource.</webmaker-footnote>
   </body>
 </html>
