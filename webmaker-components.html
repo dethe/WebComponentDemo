@@ -23,10 +23,14 @@
         width: 400px;
         height: 300px;
       }
+      .footnote {
+        width: 300px;
+        height: 300px;
+      }
     </style>
     <div class="webmaker-video">
       <div class="container"></div>
-      <div id="footnote"></div>
+      <div id="footnote" class="footnote"></div>
     </div>
   </template>
 
@@ -80,10 +84,10 @@
 <!--
   text pop event.
 -->
-<element name="webmaker-footnote" attributes="start end">
+<element name="webmaker-text" attributes="start end">
   <template>
     <style scoped>
-      webmaker-pop { display: none; }
+      webmaker-text { display: none; }
     </style>
     <content></content>
   </template>
@@ -96,23 +100,28 @@
           var end = this.attributes.getNamedItem("end").nodeValue;
           var text = this.textContent;
 
-          // do template replacing
-          this.innerHTML = "";
+          if(document.querySelectorAll("webmaker-video").length > 0) {
+            // do template replacing
+            this.innerHTML = "";
 
-          // register a text pop event
-          var addEvent = function() {
-            window.pop.footnote({
-              start: start,
-              end: end,
-              text: text,
-              target: window.pop.footnoteId
-            });
-          };
+            // register a text pop event
+            var addEvent = function() {
+              window.pop.footnote({
+                start: start,
+                end: end,
+                text: text,
+                target: window.pop.footnoteId
+              });
+            };
 
-          (function tryPopcorn() {
-            if(window.pop) { addEvent(); }
-            else { setTimeout(tryPopcorn, 500); }
-          }());
+            (function tryPopcorn() {
+              if(window.pop) { addEvent(); }
+              else { setTimeout(tryPopcorn, 500); }
+            }());
+          }
+          else {
+            this.style.display = "block";
+          }
         }
       }
     });
@@ -120,8 +129,161 @@
 </element>
 
 
+<!--
+  google map
+-->
+<element name="webmaker-googlemap" attributes="start end location">
+  <template>
+    <style scoped>
+      webmaker-map { display: none; }
+    </style>
+    <content></content>
+  </template>
+  <script>
+    var template = this.querySelector("template");
+    this.register({
+      prototype: {
+        readyCallback: function() {
+          var start = this.attributes.getNamedItem("start").nodeValue;
+          var end = this.attributes.getNamedItem("end").nodeValue;
+          var location = this.attributes.getNamedItem("location").nodeValue;
+
+          // use as popcorn plugin?
+          if(document.querySelectorAll("webmaker-video").length > 0) {
+            this.innerHTML = "";
+
+            // register a text pop event
+            var addEvent = function() {
+              console.log(start, end, location);
+              window.pop.googlemap({
+                start: start,
+                end: end,
+                location: location,
+                zoom: 20,
+                target: window.pop.footnoteId
+              });
+            };
+
+            (function tryPopcorn() {
+              if(window.pop) { addEvent(); }
+              else { setTimeout(tryPopcorn, 500); }
+            }());
+          }
+          // no popcorn: build iframe instead
+          else
+          {
+            this.innerHTML = '' +
+            '<iframe class="webmaker-googlemap" width="425" height="350" frameborder="1" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.ca/maps?f=q&source=s_q&hl=en&geocode=&q=' + location.replace(/ /g,'+') + '&t=m&output=embed"></iframe>';
+          }
+        }
+      }
+    });
+  </script>
+</element>
 
 
+<element name="webmaker-wiki" attributes="start end">
+  <template>
+    <style scoped>
+      webmaker-wiki { display: block; }
+    </style>
+    <content></content>
+  </template>
+  <script>
+    var template = this.querySelector("template");
+    this.register({
+      prototype: {
+        readyCallback: function() {
+          var start = this.attributes.getNamedItem("start").nodeValue;
+          var end = this.attributes.getNamedItem("end").nodeValue;
+          var url = this.attributes.getNamedItem("src").nodeValue;
 
+          var iframe = '' +
+            '<iframe class="webmaker-wiki" width="425" height="350" frameborder="1" scrolling="yes" marginheight="0" marginwidth="0" src="'+url+'?&printable=yes"></iframe>';
+
+          if(document.querySelectorAll("webmaker-video").length > 0) {
+            // do template replacing
+            this.innerHTML = "";
+
+            // register a text pop event
+            var addEvent = function() {
+              console.log(start, end, url);
+              window.pop.footnote({
+                start: start,
+                end: end,
+                text: iframe,
+                title: "this is an article",
+                target: window.pop.footnoteId
+              });
+            };
+
+            (function tryPopcorn() {
+              if(window.pop) { addEvent(); }
+              else { setTimeout(tryPopcorn, 500); }
+            }());
+          }
+
+          else {
+            this.innerHTML = iframe;
+            this.style.display = "block";
+            this.style.height = "350px";
+          }
+        }
+      }
+    });
+  </script>
+</element>
+
+
+<element name="webmaker-badge-list">
+  <template>
+    <div id="bhwidget">
+      <content></content>
+    </div>
+  </template>
+  <script>
+    var script = document.createElement("script");
+    script.src = "http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js";
+    document.head.appendChild(script);
+
+    var template = this.querySelector("template");
+    this.register({
+      prototype: {
+        readyCallback: function() {
+          console.log(template.innerHTML);
+          this.innerHTML = template.innerHTML;
+        }
+      }
+    });
+
+  var runCode = function() {
+    var url = "http://beta.openbadges.org/displayer/5797/group/1957.json";
+    jQuery.getJSON(url, function(data) {
+      var i = 0;
+      var widgetcode = "<table>";
+      while (i < data.badges.length < 4) {
+        var badgeName = data.badges[i].assertion.badge.name;
+        var imgUrl = data.badges[i].assertion.badge.image;
+        var critUrl = data.badges[i].assertion.badge.criteria;
+        var assertUrl = data.badges[i].hostedUrl;
+        widgetcode = widgetcode + "<tr><td align='center'>";
+        widgetcode = widgetcode + "<a href='" + assertUrl + "'><img src='" + imgUrl + "' width='50' height='50' border='0'/></a><br /><a href='" + critUrl + "'>" + badgeName + "</a>";
+        widgetcode = widgetcode + "</td></tr>";
+        i += 1;
+        if (i === data.badges.length || i === 3) {
+          widgetcode = widgetcode + "</table>";
+          document.getElementById("bhwidget").innerHTML = widgetcode;
+          return;
+        }
+      }
+    });
+  };
+
+  (function tryBadgeList() {
+    if(window.jQuery) { runCode(); }
+    else { setTimeout(tryBadgeList, 500); }
+  }());
+  </script>
+</element>
 
 

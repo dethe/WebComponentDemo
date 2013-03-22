@@ -4,9 +4,22 @@
     <meta charset="utf-8">
     <title>A Web Components test</title>
     <style>
-      webmaker-footnote {
+      webmaker-text {
         display: block;
         margin: 1em 0;
+        width: 900px;
+      }
+
+      gmap {
+        width: 400px;
+        height:400px;
+        display: block;
+      }
+
+      #bhwidget {
+        position:fixed;
+        bottom: 0;
+        right: 0;
       }
     </style>
     <link rel="component" href="webmaker-components.html">
@@ -16,20 +29,30 @@
 
     <webmaker-video href="http://www.youtube.com/watch?v=7jWYUtQZhK0"></webmaker-video>
 
-    <webmaker-footnote start="0" end="10">Alright, so here's the deal. I love red pandas. This is not particularly
+    <webmaker-text start="0" end="10">Alright, so here's the deal. I love red pandas. This is not particularly
       a secret, and it's not very hard to see why. They're ridiculously cute,
       look very fluffy, and seem very playful.
-    </webmaker-footnote>
+    </webmaker-text>
 
-    <webmaker-footnote start="10" end="13">They're also incredibly endangered in the wild.</webmaker-footnote>
+    <webmaker-text start="10" end="13">They're also incredibly endangered in the wild.</webmaker-text>
 
-    <webmaker-footnote start="13" end="23">To be fair, they're ridiculous animals from a zoological point of view.
+    <webmaker-text start="13" end="23">To be fair, they're ridiculous animals from a zoological point of view.
       The red panda has a body plan designed for predation, but instead it
-      eats mostly bamboo leaves.</webmaker-footnote>
+      eats mostly bamboo leaves.</webmaker-text>
 
-    <webmaker-footnote start="23" end="33">Bamboo is hard to digest, has very little nutritional value (so you need
+    <webmaker-text start="23" end="33">Bamboo is hard to digest, has very little nutritional value (so you need
       to eat a LOT of it in a day), and covers a wide area for the the energy
-      you get out of it. So it's really silly as a foodsource.</webmaker-footnote>
+      you get out of it. So it's really silly as a foodsource.</webmaker-text>
+
+    <webmaker-text start="35" end="45">This is what wikipedia has to say about them:</webmaker-text>
+    
+    <webmaker-wiki start="35" end="45" src="http://en.wikipedia.org/wiki/Red_panda"></webmaker-wiki>
+
+    <webmaker-text start="45" end="90">And this is where I went to go see them:</webmaker-text>
+
+    <webmaker-googlemap start="45" end="90" location="Maruyama Zoo"></webmaker-googlemap>
+
+    <webmaker-badge-list></webmaker-badge-list>
   </body>
 
   <!-- temporary polyfill, used until browsers fully implement web components -->
