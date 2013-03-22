@@ -96,11 +96,12 @@
     this.register({
       prototype: {
         readyCallback: function() {
-          var start = this.attributes.getNamedItem("start").nodeValue;
-          var end = this.attributes.getNamedItem("end").nodeValue;
           var text = this.textContent;
 
           if(document.querySelectorAll("webmaker-video").length > 0) {
+            var start = this.attributes.getNamedItem("start").nodeValue;
+            var end = this.attributes.getNamedItem("end").nodeValue;
+ 
             // do template replacing
             this.innerHTML = "";
 
@@ -144,12 +145,13 @@
     this.register({
       prototype: {
         readyCallback: function() {
-          var start = this.attributes.getNamedItem("start").nodeValue;
-          var end = this.attributes.getNamedItem("end").nodeValue;
           var location = this.attributes.getNamedItem("location").nodeValue;
 
           // use as popcorn plugin?
           if(document.querySelectorAll("webmaker-video").length > 0) {
+            var start = this.attributes.getNamedItem("start").nodeValue;
+            var end = this.attributes.getNamedItem("end").nodeValue;
+ 
             this.innerHTML = "";
 
             // register a text pop event
@@ -194,14 +196,15 @@
     this.register({
       prototype: {
         readyCallback: function() {
-          var start = this.attributes.getNamedItem("start").nodeValue;
-          var end = this.attributes.getNamedItem("end").nodeValue;
           var url = this.attributes.getNamedItem("src").nodeValue;
 
           var iframe = '' +
             '<iframe class="webmaker-wiki" width="425" height="350" frameborder="1" scrolling="yes" marginheight="0" marginwidth="0" src="'+url+'?&printable=yes"></iframe>';
 
           if(document.querySelectorAll("webmaker-video").length > 0) {
+            var start = this.attributes.getNamedItem("start").nodeValue;
+            var end = this.attributes.getNamedItem("end").nodeValue;
+  
             // do template replacing
             this.innerHTML = "";
 
