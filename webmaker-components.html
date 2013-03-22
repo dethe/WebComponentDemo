@@ -29,7 +29,7 @@
       }
     </style>
     <div class="webmaker-media">
-      <div class="container"></div>
+      <div class="media-container"></div>
       <div id="footnote" class="footnote"></div>
     </div>
   </template>
@@ -54,7 +54,7 @@
           this.innerHTML = newContent;
 
           var id = getNextCount();
-          var videoElement = this.querySelector(".container");
+          var videoElement = this.querySelector(".media-container");
           videoElement.id = "webmakerVideo" + id;
 
           var footnote = this.querySelector("#footnote");
@@ -135,7 +135,7 @@
 <!--
   google map
 -->
-<element name="webmaker-googlemap" attributes="start end location">
+<element name="webmaker-map" attributes="start end location">
   <template>
     <style scoped>
       webmaker-map { display: none; }
@@ -177,7 +177,7 @@
           else
           {
             this.innerHTML = '' +
-            '<iframe class="webmaker-googlemap" width="425" height="350" frameborder="1" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.ca/maps?f=q&source=s_q&hl=en&geocode=&q=' + location.replace(/ /g,'+') + '&t=m&output=embed"></iframe>';
+            '<iframe class="webmaker-map" width="425" height="350" frameborder="1" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.ca/maps?f=q&source=s_q&hl=en&geocode=&q=' + location.replace(/ /g,'+') + '&t=m&output=embed"></iframe>';
           }
         }
       }

@@ -1,58 +1,58 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <title>A Web Components test</title>
+    <link rel="stylesheet" href="bootstrap.min.css">
     <style>
       webmaker-text {
-        display: block;
         margin: 1em 0;
-        width: 900px;
       }
-
-      gmap {
-        width: 400px;
-        height:400px;
-        display: block;
-      }
-
       #bhwidget {
         position:fixed;
         top: 0;
-        right: 0;
+        right: 20px;
+      }
+      #bhwidget a {
+        color: transparent!important;
+      }
+      html,body {
+        background: #f9f9f9 url('https://popcorn.webmaker.org/media/img/bg-stone.png') 0 0 repeat-x;
+      }
+      header {
+        width:100%;
+        height: 30px;
+        background-color: #444
       }
     </style>
     <link rel="component" href="webmaker-components.html">
   <body>
+    <header>
+    </header>
 
-    <h1>Who likes red pandas?</h1>
+    <section class="container">
+      <h1 class="span8">Who likes red pandas?</h1>
+      <div class="row">
+        <webmaker-media class="span8" href="http://www.youtube.com/watch?v=7jWYUtQZhK0"></webmaker-media>
+        <webmaker-text start="0" end="10">Alright, so here's the deal. I love red pandas. This is not particularly
+          a secret, and it's not very hard to see why. They're ridiculously cute,
+          look very fluffy, and seem very playful.</webmaker-text>
+        <webmaker-text start="10" end="13">They're also incredibly endangered in the wild.</webmaker-text>
+        <webmaker-text start="13" end="23">To be fair, they're ridiculous animals from a zoological point of view.
+          The red panda has a body plan designed for predation, but instead it
+          eats mostly bamboo leaves.</webmaker-text>
+        <webmaker-text start="23" end="33">Bamboo is hard to digest, has very little nutritional value (so you need
+          to eat a LOT of it in a day), and covers a wide area for the the energy
+          you get out of it. So it's really silly as a foodsource.</webmaker-text>
+        <webmaker-text start="35" end="45">This is what wikipedia has to say about them:</webmaker-text>
+        <webmaker-wiki start="35" end="45" src="http://en.wikipedia.org/wiki/Red_panda"></webmaker-wiki>
+        <webmaker-text start="45" end="90">And this is where I went to go see them:</webmaker-text>
+        <webmaker-map start="45" end="90" location="Maruyama Zoo"></webmaker-map>
+        <webmaker-badge-list></webmaker-badge-list>
+      </div>
 
-    <webmaker-media href="http://www.youtube.com/watch?v=7jWYUtQZhK0"></webmaker-media>
+    </section>
 
-    <webmaker-text start="0" end="10">Alright, so here's the deal. I love red pandas. This is not particularly
-      a secret, and it's not very hard to see why. They're ridiculously cute,
-      look very fluffy, and seem very playful.
-    </webmaker-text>
-
-    <webmaker-text start="10" end="13">They're also incredibly endangered in the wild.</webmaker-text>
-
-    <webmaker-text start="13" end="23">To be fair, they're ridiculous animals from a zoological point of view.
-      The red panda has a body plan designed for predation, but instead it
-      eats mostly bamboo leaves.</webmaker-text>
-
-    <webmaker-text start="23" end="33">Bamboo is hard to digest, has very little nutritional value (so you need
-      to eat a LOT of it in a day), and covers a wide area for the the energy
-      you get out of it. So it's really silly as a foodsource.</webmaker-text>
-
-    <webmaker-text start="35" end="45">This is what wikipedia has to say about them:</webmaker-text>
-    
-    <webmaker-wiki start="35" end="45" src="http://en.wikipedia.org/wiki/Red_panda"></webmaker-wiki>
-
-    <webmaker-text start="45" end="90">And this is where I went to go see them:</webmaker-text>
-
-    <webmaker-googlemap start="45" end="90" location="Maruyama Zoo"></webmaker-googlemap>
-
-    <webmaker-badge-list></webmaker-badge-list>
   </body>
 
   <!-- temporary polyfill, used until browsers fully implement web components -->
