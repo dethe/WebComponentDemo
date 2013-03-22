@@ -15,10 +15,10 @@
   The webmaker video component sets up a popcorn'd video
   container 
 -->
-<element name="webmaker-video" attributes="href">
+<element name="webmaker-media" attributes="href">
   <template>
     <style scoped>
-      webmaker-video {
+      webmaker-media {
         display: block;
         width: 400px;
         height: 300px;
@@ -28,7 +28,7 @@
         height: 300px;
       }
     </style>
-    <div class="webmaker-video">
+    <div class="webmaker-media">
       <div class="container"></div>
       <div id="footnote" class="footnote"></div>
     </div>
@@ -42,7 +42,7 @@
       };
     }());
 
-    var template = this.querySelector("element[name='webmaker-video'] template");
+    var template = this.querySelector("element[name='webmaker-media'] template");
     this.register({
       prototype: {
         readyCallback: function() {
