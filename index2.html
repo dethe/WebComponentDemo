@@ -3,53 +3,44 @@
   <head>
     <meta charset="utf-8">
     <title>A Web Components test</title>
-    <link rel="stylesheet" href="bootstrap.min.css">
-    <style>
-      webmaker-text {
-        margin: 1em 0;
-      }
-      #bhwidget {
-        position:fixed;
-        top: 0;
-        right: 20px;
-      }
-      #bhwidget a {
-        color: transparent!important;
-      }
-      html,body {
-        background: #f9f9f9 url('https://popcorn.webmaker.org/media/img/bg-stone.png') 0 0 repeat-x;
-      }
-      header {
-        width:100%;
-        height: 30px;
-        background-color: #444
-      }
-    </style>
+    <link rel="stylesheet" href="style.css">
     <link rel="component" href="webmaker-components.html">
   <body>
     <header>
+      Check out the difference:
+      <a href="index.html">With a media element</a>
+      -
+      <a href="index2.html">Without a media element</a>
     </header>
 
     <section class="container">
-      <h1 class="span8">Who likes red pandas?</h1>
-      <div class="row">
-        <webmaker-text start="0" end="10">Alright, so here's the deal. I love red pandas. This is not particularly
-          a secret, and it's not very hard to see why. They're ridiculously cute,
-          look very fluffy, and seem very playful.</webmaker-text>
-        <webmaker-text start="10" end="13">They're also incredibly endangered in the wild.</webmaker-text>
-        <webmaker-text start="13" end="23">To be fair, they're ridiculous animals from a zoological point of view.
-          The red panda has a body plan designed for predation, but instead it
-          eats mostly bamboo leaves.</webmaker-text>
-        <webmaker-text start="23" end="33">Bamboo is hard to digest, has very little nutritional value (so you need
-          to eat a LOT of it in a day), and covers a wide area for the the energy
-          you get out of it. So it's really silly as a foodsource.</webmaker-text>
-        <webmaker-text start="35" end="45">This is what wikipedia has to say about them:</webmaker-text>
-        <webmaker-wiki start="35" end="45" src="http://en.wikipedia.org/wiki/Red_panda"></webmaker-wiki>
-        <webmaker-text start="45" end="90">And this is where I went to go see them:</webmaker-text>
-        <webmaker-map start="45" end="90" location="Maruyama Zoo"></webmaker-map>
-        <webmaker-badge-list></webmaker-badge-list>
-      </div>
+      <h1>Who likes red pandas?</h1>
 
+      <webmaker-pandas></webmaker-pandas>
+
+      <webmaker-text>Alright, so here's the deal. I love red pandas. This is not particularly
+        a secret, and it's not very hard to see why. They're ridiculously cute,
+        look very fluffy, and seem very playful.</webmaker-text>
+
+      <webmaker-text>They're also incredibly endangered in the wild.</webmaker-text>
+
+      <webmaker-text>To be fair, they're ridiculous animals from a zoological point of view.
+        The red panda has a body plan designed for predation, but instead it
+        eats mostly bamboo leaves.</webmaker-text>
+
+      <webmaker-text>Bamboo is hard to digest, has very little nutritional value (so you need
+        to eat a LOT of it in a day), and covers a wide area for the the energy
+        you get out of it. So it's really silly as a foodsource.</webmaker-text>
+
+      <webmaker-text><h2>This is what wikipedia has to say about them:</h2></webmaker-text>
+
+      <webmaker-wiki src="http://en.wikipedia.org/wiki/Red_panda"></webmaker-wiki>
+
+      <webmaker-text><h2>And this is where I went to go see them:</h2></webmaker-text>
+
+      <webmaker-map location="Maruyama Zoo"></webmaker-map>
+
+      <webmaker-badge-list></webmaker-badge-list>
     </section>
 
   </body>

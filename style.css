@@ -1,0 +1,51 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+webmaker-text {
+  margin: 1em 0;
+}
+#bhwidget {
+  position:fixed;
+  top: 0;
+  right: 20px;
+}
+#bhwidget a {
+  color: transparent!important;
+}
+html,body {
+  background: #f9f9f9 url('https://popcorn.webmaker.org/media/img/bg-stone.png') 0 0 repeat-x;
+}
+header {
+  width:100%;
+  height: 30px;
+  background-color: #444;
+  line-height: 2em;
+  color: #CCC;
+}
+header a, header a:visited {
+  color: #EEE;
+  text-decoration: none;
+}
+webmaker-pandas {
+  float: right;
+}
+section.container {
+  width: 800px;
+  margin: 0 auto;
+}
+section.container iframe {
+  width: 100%;
+}
+section.container webmaker-media {
+  margin: auto;
+}
+
+h1, h2 {
+  clear: both;
+  text-align: center;
+}
+
+.footnote {
+  width: 100%!important;
+}

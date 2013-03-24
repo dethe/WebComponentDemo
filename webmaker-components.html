@@ -1,4 +1,43 @@
-<!-- our master element makes sure popcorn gets loaded -->
+<!-- our master element for "webmaker" things -->
+<element name="webmaker">
+  <script>
+    // Totally using this solely to get a global library set up.
+    if(!window.WebMaker) {
+      // tripleclick handler
+      var tripleEdit = function tripleEdit(c) {
+        var lastClick = 0;
+        var clicksRecorded = 0;
+        return function tripleEdit(evt) {
+          var now = Date.now();
+          if(now-lastClick < 200) {
+            clicksRecorded++;
+            if(clicksRecorded==3) { c.contentEditable = true; }
+          } else { clicksRecorded = 1; }
+          lastClick = now;
+        };
+      };
+
+      window.WebMaker = {
+        components: [],
+        addComponent: function addComponent(c) {
+          console.log("adding component");
+          this.components.push(c);
+          // triple-click-to-edit
+          c.addEventListener("click",tripleEdit(c),false);
+          c.addEventListener("blur",function(evt){c.removeAttribute("contentEditable");}, false);
+        },
+        updateComponent: function updateComponent(c) {
+          console.log("updating component");
+        }
+      };
+    }
+  </script>
+</element>
+
+
+<!--
+  our master element makes sure popcorn gets loaded
+-->
 <element name="webmaker-popcorn">
   <script>
     // load popcorn if we don't have it available already
@@ -11,9 +50,10 @@
   </script>
 </element>
 
+
 <!--
   The webmaker video component sets up a popcorn'd video
-  container 
+  container
 -->
 <element name="webmaker-media" attributes="href">
   <template>
@@ -50,7 +90,7 @@
           // do template replacing
           var ocontent = this.textContent;
           var ihtml = template.innerHTML;
-          var newContent = ihtml.replace("<content></content>",ocontent);        
+          var newContent = ihtml.replace("<content></content>",ocontent);
           this.innerHTML = newContent;
 
           var id = getNextCount();
@@ -75,11 +115,14 @@
             else { setTimeout(tryPopcorn, 500); }
           }());
 
+          // register with the WebMaker controller
+          WebMaker.addComponent(this);
         }
       }
     });
   </script>
 </element>
+
 
 <!--
   text pop event.
@@ -102,8 +145,6 @@
             var start = this.attributes.getNamedItem("start").nodeValue;
             var end = this.attributes.getNamedItem("end").nodeValue;
 
-            console.log("media found");
- 
             // do template replacing
             this.innerHTML = "";
 
@@ -125,6 +166,76 @@
           else {
             this.style.display = "block";
           }
+
+          // register with the WebMaker controller
+          WebMaker.addComponent(this);
+        }
+      }
+    });
+  </script>
+</element>
+
+
+<!--
+  flickr
+-->
+<element name="webmaker-pandas" attributes="start end">
+  <template>
+    <div class="webmaker-pandas"><content></content></div>
+  </template>
+  <script>
+    var scr = document.createElement("script");
+    scr.src = "plugins/flickrfindr.js";
+    document.head.appendChild(scr);
+
+    var template = this.querySelector("template");
+    this.register({
+      prototype: {
+        readyCallback: function() {
+          var ref = this;
+          ref.innerHTML = template.innerHTML;
+
+          var setThisUp = function() {
+            var img = FlickrFindr.getPhotos(1)[0];
+
+            // use as popcorn plugin?
+            if(document.querySelectorAll("webmaker-media").length > 0) {
+              var start = ref.attributes.getNamedItem("start").nodeValue;
+              var end = ref.attributes.getNamedItem("end").nodeValue;
+
+              // register a text pop event
+              var addEvent = function() {
+                var props = {
+                  start: start,
+                  end: end,
+                  href: img.src,
+                  src: img.src + ".jpg",
+                  text: "",
+                  target: window.pop.footnoteId
+                };
+                console.log(props);
+                window.pop.image(props);
+              };
+
+              (function tryPopcorn() {
+                if(window.pop) { addEvent(); }
+                else { setTimeout(tryPopcorn, 500); }
+              }());
+            }
+            // no popcorn: build iframe instead
+            else
+            {
+              ref.innerHTML = "<img src='"+img.src+".jpg'>";
+            }
+          };
+
+          (function tryFlickFindr() {
+            if(window.FlickrFindr) { setThisUp(); }
+            else { setTimeout(tryFlickFindr, 500); }
+          }());
+
+          // register with the WebMaker controller
+          WebMaker.addComponent(this);
         }
       }
     });
@@ -153,12 +264,11 @@
           if(document.querySelectorAll("webmaker-media").length > 0) {
             var start = this.attributes.getNamedItem("start").nodeValue;
             var end = this.attributes.getNamedItem("end").nodeValue;
- 
+
             this.innerHTML = "";
 
             // register a text pop event
             var addEvent = function() {
-              console.log(start, end, location);
               window.pop.googlemap({
                 start: start,
                 end: end,
@@ -179,6 +289,9 @@
             this.innerHTML = '' +
             '<iframe class="webmaker-map" width="425" height="350" frameborder="1" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.ca/maps?f=q&source=s_q&hl=en&geocode=&q=' + location.replace(/ /g,'+') + '&t=m&output=embed"></iframe>';
           }
+
+          // register with the WebMaker controller
+          WebMaker.addComponent(this);
         }
       }
     });
@@ -186,6 +299,9 @@
 </element>
 
 
+<!--
+  Wikipedia page-show event
+-->
 <element name="webmaker-wiki" attributes="start end">
   <template>
     <style scoped>
@@ -206,13 +322,12 @@
           if(document.querySelectorAll("webmaker-media").length > 0) {
             var start = this.attributes.getNamedItem("start").nodeValue;
             var end = this.attributes.getNamedItem("end").nodeValue;
-  
+
             // do template replacing
             this.innerHTML = "";
 
             // register a text pop event
             var addEvent = function() {
-              console.log(start, end, url);
               window.pop.footnote({
                 start: start,
                 end: end,
@@ -233,6 +348,9 @@
             this.style.display = "block";
             this.style.height = "350px";
           }
+
+          // register with the WebMaker controller
+          WebMaker.addComponent(this);
         }
       }
     });
@@ -255,39 +373,40 @@
     this.register({
       prototype: {
         readyCallback: function() {
-          console.log(template.innerHTML);
           this.innerHTML = template.innerHTML;
+          // register with the WebMaker controller
+          WebMaker.addComponent(this);
         }
       }
     });
 
-  var runCode = function() {
-    var url = "http://beta.openbadges.org/displayer/5797/group/1957.json";
-    jQuery.getJSON(url, function(data) {
-      var i = 0;
-      var widgetcode = "<table>";
-      while (i < data.badges.length < 4) {
-        var badgeName = data.badges[i].assertion.badge.name;
-        var imgUrl = data.badges[i].assertion.badge.image;
-        var critUrl = data.badges[i].assertion.badge.criteria;
-        var assertUrl = data.badges[i].hostedUrl;
-        widgetcode = widgetcode + "<tr><td align='center'>";
-        widgetcode = widgetcode + "<a href='" + assertUrl + "'><img src='" + imgUrl + "' width='50' height='50' border='0'/></a><br /><a href='" + critUrl + "'>" + badgeName + "</a>";
-        widgetcode = widgetcode + "</td></tr>";
-        i += 1;
-        if (i === data.badges.length || i === 3) {
-          widgetcode = widgetcode + "</table>";
-          document.getElementById("bhwidget").innerHTML = widgetcode;
-          return;
+    var runCode = function() {
+      var url = "http://beta.openbadges.org/displayer/5797/group/1957.json";
+      jQuery.getJSON(url, function(data) {
+        var i = 0;
+        var widgetcode = "<table>";
+        while (i < data.badges.length < 4) {
+          var badgeName = data.badges[i].assertion.badge.name;
+          var imgUrl = data.badges[i].assertion.badge.image;
+          var critUrl = data.badges[i].assertion.badge.criteria;
+          var assertUrl = data.badges[i].hostedUrl;
+          widgetcode = widgetcode + "<tr><td align='center'>";
+          widgetcode = widgetcode + "<a href='" + assertUrl + "'><img src='" + imgUrl + "' width='50' height='50' border='0'/></a><br /><a href='" + critUrl + "'>" + badgeName + "</a>";
+          widgetcode = widgetcode + "</td></tr>";
+          i += 1;
+          if (i === data.badges.length || i === 3) {
+            widgetcode = widgetcode + "</table>";
+            document.getElementById("bhwidget").innerHTML = widgetcode;
+            return;
+          }
         }
-      }
-    });
-  };
+      });
+    };
 
-  (function tryBadgeList() {
-    if(window.jQuery) { runCode(); }
-    else { setTimeout(tryBadgeList, 500); }
-  }());
+    (function tryBadgeList() {
+      if(window.jQuery) { runCode(); }
+      else { setTimeout(tryBadgeList, 500); }
+    }());
   </script>
 </element>
 
