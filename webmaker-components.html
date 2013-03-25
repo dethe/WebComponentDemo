@@ -39,13 +39,12 @@
   The webmaker video component sets up a popcorn'd video
   container
 -->
-<element name="webmaker-media" attributes="href">
+<element name="webmaker-media" attributes="href width height">
   <template>
     <style scoped>
       webmaker-media {
         display: block;
-        width: 400px;
-        height: 300px;
+        width: 100%;
       }
       .footnote {
         width: 300px;
@@ -70,6 +69,11 @@
     this.register({
       prototype: {
         readyCallback: function() {
+          var element = this;
+          var w = this.attributes.getNamedItem("width");
+          w = w ? w.nodeValue : false;
+          var h = this.attributes.getNamedItem("height");
+          h = h ? h.nodeValue : false;
 
           // do template replacing
           var ocontent = this.textContent;
@@ -80,6 +84,8 @@
           var id = getNextCount();
           var videoElement = this.querySelector(".media-container");
           videoElement.id = "webmakerVideo" + id;
+          if(w) { videoElement.width = w|0; videoElement.style.width = w; }
+          if(h) { videoElement.height = h|0; videoElement.style.height = h; }
 
           var footnote = this.querySelector("#footnote");
           footnote.id = footnote.id + id;
