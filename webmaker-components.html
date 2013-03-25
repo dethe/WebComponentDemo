@@ -22,13 +22,7 @@
   }(window));
 </script>
 
-
-<!--
-  our master element makes sure popcorn gets loaded
--->
-<element name="webmaker-popcorn">
-  <template></template>
-  <script>
+<script>
   /**
    * If we do not have Popcorn available, we try to load it.
    * While it's loading, we keep an object around that has the
@@ -39,29 +33,29 @@
    * real Popcorn take over.
    */
   (function(global){
-      var fnCache = [];
+    var fnCache = [];
 
-      // load popcorn if we don't have it available already
-      if(!global.Popcorn) {
-        // Stub out Popcorn until it loads
-        global.Popcorn = function( fn ) {
-          fnCache.push( fn );      
-        };
-        
-        // Add popcorn as a script dependency
-        var popcornScript = document.createElement("script");
-        popcornScript.onload = function(){
-          Popcorn(function(){
-            // Clear out the function cache now that Popcorn is ready
-            fnCache.forEach(function(f) { f(); });
-          });
-        };
-        popcornScript.src = "http://cdn.popcornjs.org/code/dist/popcorn-complete.js";
-        document.head.appendChild(popcornScript);
-      }
-    }(window));
-  </script>
-</element>
+    // load popcorn if we don't have it available already
+    if(!global.Popcorn) {
+      // Stub out Popcorn until it loads
+      global.Popcorn = function( fn ) {
+        fnCache.push( fn );      
+      };
+      
+      // Add popcorn as a script dependency
+      var popcornScript = document.createElement("script");
+      popcornScript.onload = function(){
+        Popcorn(function(){
+          // Clear out the function cache now that Popcorn is ready
+          fnCache.forEach(function(f) { f(); });
+        });
+      };
+      popcornScript.src = "http://cdn.popcornjs.org/code/dist/popcorn-complete.js";
+      document.head.appendChild(popcornScript);
+    }
+  }(window));
+</script>
+
 
 
 <!--
