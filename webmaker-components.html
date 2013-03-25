@@ -1,36 +1,20 @@
 <!-- our master element for "webmaker" things -->
 <element name="webmaker">
   <script>
-    // Totally using this solely to get a global library set up.
-    if(!window.WebMaker) {
-      // tripleclick handler
-      var tripleEdit = function tripleEdit(c) {
-        var lastClick = 0;
-        var clicksRecorded = 0;
-        return function tripleEdit(evt) {
-          var now = Date.now();
-          if(now-lastClick < 200) {
-            clicksRecorded++;
-            if(clicksRecorded==3) { c.contentEditable = true; }
-          } else { clicksRecorded = 1; }
-          lastClick = now;
+      (function(global){
+        var components = [];
+        global.WebMaker = {
+          addComponent: function addComponent(c) {
+            components.push(c);
+          },
+          updateComponent: function updateComponent(c) {
+            // ...
+          },
+          getComponentList: function getComponentList() {
+            return components;
+          }
         };
-      };
-
-      window.WebMaker = {
-        components: [],
-        addComponent: function addComponent(c) {
-          console.log("adding component");
-          this.components.push(c);
-          // triple-click-to-edit
-          c.addEventListener("click",tripleEdit(c),false);
-          c.addEventListener("blur",function(evt){c.removeAttribute("contentEditable");}, false);
-        },
-        updateComponent: function updateComponent(c) {
-          console.log("updating component");
-        }
-      };
-    }
+      }(window));
   </script>
 </element>
 
@@ -132,7 +116,7 @@
     <style scoped>
       webmaker-text { display: none; }
     </style>
-    <content></content>
+    <p><content></content></p>
   </template>
   <script>
     var template = this.querySelector("template");
@@ -179,60 +163,44 @@
 <!--
   flickr
 -->
-<element name="webmaker-pandas" attributes="start end">
+<element name="webmaker-image" attributes="start end src alt">
   <template>
-    <div class="webmaker-pandas"><content></content></div>
+    <img src="">
   </template>
   <script>
-    var scr = document.createElement("script");
-    scr.src = "plugins/flickrfindr.js";
-    document.head.appendChild(scr);
-
     var template = this.querySelector("template");
     this.register({
       prototype: {
         readyCallback: function() {
-          var ref = this;
-          ref.innerHTML = template.innerHTML;
+          var src = this.attributes.getNamedItem("src").nodeValue;
+          var alt = this.attributes.getNamedItem("alt").nodeValue;
+          this.innerHTML = template.innerHTML;
+          if(document.querySelectorAll("webmaker-media").length > 0) {
+            var start = this.attributes.getNamedItem("start").nodeValue;
+            var end = this.attributes.getNamedItem("end").nodeValue;
 
-          var setThisUp = function() {
-            var img = FlickrFindr.getPhotos(1)[0];
-
-            // use as popcorn plugin?
-            if(document.querySelectorAll("webmaker-media").length > 0) {
-              var start = ref.attributes.getNamedItem("start").nodeValue;
-              var end = ref.attributes.getNamedItem("end").nodeValue;
-
-              // register a text pop event
-              var addEvent = function() {
-                var props = {
-                  start: start,
-                  end: end,
-                  href: img.src,
-                  src: img.src + ".jpg",
-                  text: "",
-                  target: window.pop.footnoteId
-                };
-                console.log(props);
-                window.pop.image(props);
+            // register an image event
+            var addEvent = function() {
+              var props = {
+                start: start,
+                end: end,
+                href: alt,
+                src: src,
+                text: "",
+                target: window.pop.footnoteId
               };
+              console.log(props);
+              window.pop.image(props);
+            };
 
-              (function tryPopcorn() {
-                if(window.pop) { addEvent(); }
-                else { setTimeout(tryPopcorn, 500); }
-              }());
-            }
-            // no popcorn: build iframe instead
-            else
-            {
-              ref.innerHTML = "<img src='"+img.src+".jpg'>";
-            }
-          };
-
-          (function tryFlickFindr() {
-            if(window.FlickrFindr) { setThisUp(); }
-            else { setTimeout(tryFlickFindr, 500); }
-          }());
+            (function tryPopcorn() {
+              if(window.pop) { addEvent(); }
+              else { setTimeout(tryPopcorn, 500); }
+            }());
+          }
+          else {
+            this.querySelector("img").src = src;
+          }
 
           // register with the WebMaker controller
           WebMaker.addComponent(this);

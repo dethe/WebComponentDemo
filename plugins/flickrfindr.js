@@ -10,10 +10,12 @@
   window.FlickrFindr = {
     photos: (function(url) {
       var json = get(url);
+      console.log(json);
       var fn = new Function("return "+json+";");
       var pandas = fn();
       return pandas.photos.photo;
     }(pandaURL)),
+
     getPhotos: function(howMany) {
       var list = [], pobj, url, img;
       for(var i=0; i<howMany; i++) {
