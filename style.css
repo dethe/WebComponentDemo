@@ -1,14 +1,7 @@
 html, body {
   margin: 0;
   padding: 0;
-}
-
-html,body {
   background-color: #f9f9f9;
-/*
-  background-image: url('https://popcorn.webmaker.org/media/img/bg-stone.png') 0 0 repeat-x;
-  background-image: url(checkit.png);
-*/
   background-image: url(checkit.png), url('https://popcorn.webmaker.org/media/img/bg-stone.png');
   background-position: right 50px, 0 0;
   background-repeat: no-repeat, repeat-x;
@@ -21,40 +14,49 @@ header {
   line-height: 2em;
   color: #CCC;
 }
+
 header a, header a:visited {
   color: #EEE;
   text-decoration: none;
 }
+
 section.container {
   width: 800px;
   margin: 0 auto;
 }
+
 section.container iframe {
   width: 100%;
 }
+
 section.container webmaker-media {
   margin: auto;
 }
+
 h1, h2 {
   clear: both;
   text-align: center;
   font-size: 2em;
 }
+
 h1 {
   font-size:3em;
 }
+
 webmaker-image {
   float: right;
   margin-left: 1em;
 }
+
 webmaker-text {
   margin: 1em 0;
 }
+
 #bhwidget {
-  position:fixed;
-  top: 0;
-  right: 20px;
+  float:right;
+  margin-right: 20px;
 }
+
 #bhwidget a {
   color: transparent!important;
 }
