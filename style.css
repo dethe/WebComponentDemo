@@ -1,3 +1,7 @@
+/*
+    regular document styling
+*/
+
 html, body {
   margin: 0;
   padding: 0;
@@ -20,19 +24,6 @@ header a, header a:visited {
   text-decoration: none;
 }
 
-section.container {
-  width: 800px;
-  margin: 0 auto;
-}
-
-section.container iframe {
-  width: 100%;
-}
-
-section.container webmaker-media {
-  margin: auto;
-}
-
 h1, h2 {
   clear: both;
   text-align: center;
@@ -43,6 +34,15 @@ h1 {
   font-size:3em;
 }
 
+section.container {
+  width: 800px;
+  margin: 0 auto;
+}
+
+/*
+    custom element styling
+*/
+
 webmaker-image {
   float: right;
   margin-left: 1em;
@@ -52,6 +52,22 @@ webmaker-text {
   margin: 1em 0;
 }
 
+.footnote {
+  width: 100%!important;
+  font-size: 1.5em;
+  font-family: sans;
+  text-align: justify;
+}
+
+#actualmap1 {
+  border: 1px solid black;
+}
+
+
+/*
+    badges!
+*/
+
 #bhwidget {
   float:right;
   margin-right: 20px;
@@ -59,11 +75,4 @@ webmaker-text {
 
 #bhwidget a {
   color: transparent!important;
-}
-
-.footnote {
-  width: 100%!important;
-  font-size: 1.5em;
-  font-family: sans;
-  text-align: justify;
 }
