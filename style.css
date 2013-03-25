@@ -2,17 +2,7 @@ html, body {
   margin: 0;
   padding: 0;
 }
-webmaker-text {
-  margin: 1em 0;
-}
-#bhwidget {
-  position:fixed;
-  top: 0;
-  right: 20px;
-}
-#bhwidget a {
-  color: transparent!important;
-}
+
 html,body {
   background-color: #f9f9f9;
 /*
@@ -35,10 +25,6 @@ header a, header a:visited {
   color: #EEE;
   text-decoration: none;
 }
-webmaker-image {
-  float: right;
-  margin-left: 1em;
-}
 section.container {
   width: 800px;
   margin: 0 auto;
@@ -49,14 +35,30 @@ section.container iframe {
 section.container webmaker-media {
   margin: auto;
 }
-
 h1, h2 {
   clear: both;
   text-align: center;
   padding-top: 1em;
 }
-
+webmaker-image {
+  float: right;
+  margin-left: 1em;
+}
+webmaker-text {
+  margin: 1em 0;
+}
+#bhwidget {
+  position:fixed;
+  top: 0;
+  right: 20px;
+}
+#bhwidget a {
+  color: transparent!important;
+}
 
 .footnote {
   width: 100%!important;
+  font-size: 2em;
+  font-family: sans;
+  text-align: justify;
 }
