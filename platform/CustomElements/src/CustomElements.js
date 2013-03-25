@@ -72,12 +72,17 @@ function register(inName, inOptions) {
   // extensions of native specializations of HTMLElement require localName
   // to remain native, and use secondary 'is' specifier for extension type
   resolveTagName(definition);
+  // some platforms require modifications to the user-supplied prototype
+  // chain
+  resolvePrototypeChain(definition);
   // 7.1.5: Register the DEFINITION with DOCUMENT
   registerDefinition(inName, definition);
   // 7.1.7. Run custom element constructor generation algorithm with PROTOTYPE
   // 7.1.8. Return the output of the previous step.
   definition.ctor = generateConstructor(definition);
   definition.ctor.prototype = definition.prototype;
+  // blanket upgrade (?)
+  document.upgradeElements();
   return definition.ctor;
 }
 
@@ -100,9 +105,58 @@ function resolveTagName(inDefinition) {
   }
   // our tag is our baseTag, if it exists, and otherwise just our name
   inDefinition.tag = baseTag || inDefinition.name;
-  // if there is a base tag, use secondary 'is' specifier
   if (baseTag) {
+    // if there is a base tag, use secondary 'is' specifier
     inDefinition.is = inDefinition.name;
+  }
+}
+
+function resolvePrototypeChain(inDefinition) {
+  // TODO(sjmiles): contains ShadowDOM polyfill pollution
+  // if we don't support __proto__ we need to locate the native level
+  // prototype for precise mixing in
+  // we also need native prototype so we can replace it with a wrapper
+  // prototype if necessary
+  if (window.WrapperElement
+        && !(inDefinition.prototype instanceof WrapperElement)
+        || !Object.__proto__) {
+    if (inDefinition.is) {
+      // for non-trivial extensions, work out both prototypes
+      var inst = domCreateElement(inDefinition.tag);
+      var wrapperNative = Object.getPrototypeOf(inst);
+      if (window.WrapperElement) {
+        inst = unwrap(inst);
+      }
+      var native = Object.getPrototypeOf(inst);
+    } else {
+      // otherwise, use the defaults
+      native = HTMLElement.prototype;
+      if (window.WrapperElement) {
+        wrapperNative = WrapperHTMLUnknownElement.prototype;
+      }
+    }
+  }
+  // cache this in case of mixin
+  inDefinition.native = native;
+  // under ShadowDOM polyfill we need to use Wrapper prototype chain instead
+  // of native DOM
+  if (window.WrapperElement
+        && !(inDefinition.prototype instanceof WrapperElement)) {
+    if (Object.__proto__) {
+      // search and replace 'native' protoype with 'wrapperNative'
+      var p = inDefinition.prototype, pp;
+      while (true) {
+        pp = Object.getPrototypeOf(p);
+        if (pp === native || pp == HTMLUnknownElement.prototype) {
+          break;
+        }
+        p = pp;
+      }
+      p.__proto__ = wrapperNative;
+      //console.log(native, wrapperNative, p);
+    } else {
+      // TODO(sjmiles): support IE
+    }
   }
 }
 
@@ -119,63 +173,70 @@ function instantiate(inDefinition) {
 }
 
 function upgrade(inElement, inDefinition) {
-  // TODO(sjmiles): polyfill pollution
-  // under ShadowDOM polyfill/shim `inElement` may be a node wrapper,
-  // we need the underlying node
-  var element = inElement.node || inElement;
-  // under ShadowDOM polyfill, we need to destroy the old wrapper
-  // as we need to fresh one for the mutated prototype
-  if (/*element instanceof*/ window.WrapperElement) {
-    rewrap(element, undefined);
-  }
-  // some definitions specify as 'is' attribute
+  // make 'element' implement inDefinition.prototype
+  implement(inElement, inDefinition);
+  // some definitions specify an 'is' attribute
   if (inDefinition.is) {
     inElement.setAttribute('is', inDefinition.is);
   }
-  // TODO(sjmiles): polyfill pollution
-  // under ShadowDOM polyfill `implementor` may be a node wrapper
-  var implementor = implement(element, inDefinition.prototype);
   // flag as upgraded
-  implementor.__upgraded__ = true;
+  inElement.__upgraded__ = true;
   // invoke lifecycle.created callbacks
-  created(implementor, inDefinition);
+  created(inElement, inDefinition);
   // OUTPUT
-  return implementor;
+  return inElement;
 }
 
-function implement(inElement, inPrototype) {
+function implement(inElement, inDefinition) {
+  // prototype swizzling is best
   if (Object.__proto__) {
-    inElement.__proto__ = inPrototype;
-  } else {
+    inElement.__proto__ = inDefinition.prototype;
+  } 
+  // TODO(sjmiles): below here is feature detected, but really it's
+  // just for IE
+  else {
     // where above we can re-acquire inPrototype via
     // getPrototypeOf(Element), we cannot do so when
     // we use mixin, so we install a magic reference
-    inElement.__proto__ = inPrototype;
-    mixin(inElement, inPrototype);
+    if (!Object.__proto__) {
+      inElement.__proto__ = inDefinition.prototype;
+    }
+    customMixin(inElement, inDefinition.prototype, inDefinition.native);
   }
-  // special handling for polyfill wrappers
-  // TODO(sjmiles): polyfill pollution
-  return _publishToWrapper(inElement, inPrototype);
 }
 
-// TODO(sjmiles): polyfill pollution
-function _publishToWrapper(inElement, inPrototype) {
-  var element = (window.wrap && wrap(inElement)) || inElement;
-  // TODO(sjmiles): needed for ShadowDOMShim only
-  if (window.Nohd) {
-    // attempt to publish our public interface directly
-    // to our ShadowDOM polyfill wrapper object (excluding overrides)
-    var p = inPrototype;
-    while (p && p !== HTMLElement.prototype) {
-      Object.keys(p).forEach(function(k) {
-        if (!(k in element)) {
-          copyProperty(k, inPrototype, element);
-        }
-      });
-      p = Object.getPrototypeOf(p);
+if (!console.group) {
+  console.group = function(m) {console.log("[group] " + m);};
+  console.groupEnd = function() {console.log("[end]");};
+}
+
+function customMixin(inTarget, inSrc, inNative) {
+  //console.group(inTarget.localName);
+  // TODO(sjmiles): 'used' allows us to only copy the 'youngest' version of 
+  // any property. This set should be precalculated. We also need to 
+  // consider this for supporting 'super'.
+  var used = {};
+  // start with inSrc
+  var p = inSrc;
+  // sometimes the default is HTMLUnknownElement.prototype instead of 
+  // HTMLElement.prototype, so we add a test
+  // the idea is to avoid mixing in native prototypes, so adding
+  // the second test is WLOG
+  while (p !== inNative && p !== HTMLUnknownElement.prototype) {
+    //console.group('proto');
+    var keys = Object.getOwnPropertyNames(p);
+    for (var i=0, k; k=keys[i]; i++) {
+      if (!used[k]) {
+        //console.log(k);
+        Object.defineProperty(inTarget, k, 
+            Object.getOwnPropertyDescriptor(p, k));
+        used[k] = 1;
+      }
     }
+    //console.groupEnd();
+    p = Object.getPrototypeOf(p);
   }
-  return element;
+  //console.groupEnd();
 }
 
 function created(inElement, inDefinition) {
@@ -247,8 +308,7 @@ function upgradeElement(inElement) {
 function upgradeElements(inRoot, inSlctr) {
   var slctr = inSlctr || registrySlctr;
   if (slctr) {
-    // TODO(sjmiles): polyfill pollution
-    var root = inRoot || (window.wrap ? wrap(document) : document);
+    var root = inRoot || document;
     forEach(root.querySelectorAll(slctr), upgradeElement);
   }
 }

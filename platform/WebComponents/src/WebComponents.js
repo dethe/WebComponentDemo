@@ -114,9 +114,10 @@ var path = {
   },
   documentUrlFromNode: function(inNode) {
     var d = inNode.ownerDocument;
-    var url = (d && (d._URL || d.URL)) || "";
+    // TODO(sjmiles): ShadowDOM polyfill pollution
+    var url = d && (d._URL || d.URL || (window.unwrap && unwrap(d)._URL)) || '';
     // take only the left side if there is a #
-    url = url.split("#")[0];
+    url = url.split('#')[0];
     return url;
   },
   resolveUrl: function(inBaseUrl, inUrl) {
@@ -171,5 +172,28 @@ var forEach = Array.prototype.forEach.call.bind(Array.prototype.forEach);
 // exports
 
 window.WebComponents = WebComponents;
-  
+
+// bootstrap
+
+// IE shim for CustomEvent
+if (typeof CustomEvent !== 'function') {
+  var CustomEvent = function(inType) {
+     var e = document.createEvent('HTMLEvents');
+     e.initEvent(inType, true, true);
+     return e;
+  };
+}
+
+window.addEventListener('load', function() {
+  // preload document resource trees
+  WebComponents.preload(document, function() {
+    // TODO(sjmiles): ShadowDOM polyfill pollution
+    var sdocument = window.wrap ? wrap(document) : document;
+    // send WebComponentsLoaded when finished
+    sdocument.body.dispatchEvent(
+      new CustomEvent('WebComponentsLoaded', {bubbles: true})
+    );
+  });
+});
+
 })();

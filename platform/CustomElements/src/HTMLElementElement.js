@@ -37,10 +37,11 @@ function parseElementElement(inElement) {
   if (options.extends) {
     // build an instance of options.extends
     var archetype = document.createElement(options.extends);
-    // 'realize' a Nohd 
-    // TODO(sjmiles): polyfill pollution
-    archetype = archetype.node || archetype;
     // acquire the prototype
+    // TODO(sjmiles): __proto__ may be hinted by the custom element
+    // system on platforms that don't support native __proto__
+    // on those platforms the API is mixed into archetype and the
+    // effective base is not archetype's real prototype
     base = archetype.__proto__ || Object.getPrototypeOf(archetype);
   }
   // extend base

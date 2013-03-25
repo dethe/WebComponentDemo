@@ -86,16 +86,4 @@ console.log(flags);
   document.write('<script src="' + base + inSrc + '"></script>');
 });
 
-// bootstrap
-
-window.addEventListener('load', function() {
-  // preload document resource trees
-  WebComponents.preload(document, function() {
-    // send WebComponentsLoaded when finished
-    var e = document.createEvent('Event');
-    e.initEvent('WebComponentsLoaded', true, true);
-    document.body.dispatchEvent(e);
-  });
-});
-
 })(window.__exported_components_polyfill_scope__);
