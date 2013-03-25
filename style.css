@@ -38,7 +38,10 @@ section.container webmaker-media {
 h1, h2 {
   clear: both;
   text-align: center;
-  padding-top: 1em;
+  font-size: 2em;
+}
+h1 {
+  font-size:3em;
 }
 webmaker-image {
   float: right;
@@ -58,7 +61,7 @@ webmaker-text {
 
 .footnote {
   width: 100%!important;
-  font-size: 2em;
+  font-size: 1.5em;
   font-family: sans;
   text-align: justify;
 }
