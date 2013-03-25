@@ -184,9 +184,8 @@
               var props = {
                 start: start,
                 end: end,
-                href: alt,
                 src: src,
-                text: "",
+                alt: alt,
                 target: window.pop.footnoteId
               };
               console.log(props);
@@ -200,6 +199,7 @@
           }
           else {
             this.querySelector("img").src = src;
+            this.querySelector("img").alt = alt;
           }
 
           // register with the WebMaker controller
