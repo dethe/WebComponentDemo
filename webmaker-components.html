@@ -148,7 +148,7 @@
     this.register({
       prototype: {
         readyCallback: function() {
-          var text = this.textContent;
+          var text = this.innerHTML;
 
           // If there is a media element, we link ourselves to it.
           if(document.querySelectorAll("webmaker-media").length > 0) {
