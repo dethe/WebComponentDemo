@@ -1,440 +1,549 @@
-<script>
-  /**
-   * Our "webmaker" object can keep track of all webmaker
-   * elements for the purpose of hooking into them, should
-   * we need to. For instance, a timeline visualizer might
-   * like to ask for "all currently known elements" that
-   * have timeline information, which it can get here.
-   */
-  (function(global){
-    var components = [];
-    global.WebMaker = {
-      addComponent: function addComponent(c) {
-        components.push(c);
-      },
-      updateComponent: function updateComponent(c) {
-        // ...this might be used to effect on-page changes
-      },
-      getComponentList: function getComponentList() {
-        return components;
-      }
-    };
-  }(window));
-</script>
+<div>
+  <style scoped>
+    h2 { text-decoration: underline; }
+    h2 + p { margin-left: 2em; }
+    dl { margin-left: 2em; }
+    dt { font-weight: bolder; }
+    dd { }
+    code { font-family: monospace; }
+  </style>
 
-<script>
-  /**
-   * If we do not have Popcorn available, we try to load it.
-   * While it's loading, we keep an object around that has the
-   * same event API for addeding "things" to be popped, but 
-   * rather than doing anything with them, it just queues them
-   * until Popcorn's up and running, at which point we clear
-   * the queue, processing every addition before letting the
-   * real Popcorn take over.
-   */
-  (function(global){
-    var fnCache = [];
+  <h1>Webmaker Components</h1>
 
-    // load popcorn if we don't have it available already
-    if(!global.Popcorn) {
-      // Stub out Popcorn until it loads
-      global.Popcorn = function( fn ) {
-        fnCache.push( fn );      
-      };
-      
-      // Add popcorn as a script dependency
-      var popcornScript = document.createElement("script");
-      popcornScript.onload = function(){
-        Popcorn(function(){
-          // Clear out the function cache now that Popcorn is ready
-          fnCache.forEach(function(f) { f(); });
-        });
-      };
-      popcornScript.src = "http://cdn.popcornjs.org/code/dist/popcorn-complete.js";
-      document.head.appendChild(popcornScript);
-    }
-  }(window));
-</script>
-
-
-
-<!--
-  The webmaker video component sets up a popcorn'd video container.
--->
-<element name="webmaker-media" attributes="href width height">
-  <template>
-    <div class="webmaker-media">
-      <div class="media-container"></div>
-      <div id="footnote" class="footnote"></div>
-    </div>
-  </template>
+  <p>This is the component list for HTML5 webmaker custom elements that you can use on your page, provided
+    you include a link to our components. Just link to this page and off you go! The remainder of this page
+    will explain which elements are supplied for you to use and what they do.</p>
 
   <script>
-    // A helper function we'll use to track distinct media
-    // elements. All code in <element> -> <script> blocks is
-    // execute once, when the element's definition is read 
-    // by the browser.
-    var getNextCount = (function() {
-      var webmakerVideoElementCount = 0;
-      return function() {
-        return webmakerVideoElementCount++;
+    /**
+     * Our "webmaker" object can keep track of all webmaker
+     * elements for the purpose of hooking into them, should
+     * we need to. For instance, a timeline visualizer might
+     * like to ask for "all currently known elements" that
+     * have timeline information, which it can get here.
+     */
+    (function(global){
+      var components = [];
+      global.WebMaker = {
+        addComponent: function addComponent(c) {
+          components.push(c);
+        },
+        updateComponent: function updateComponent(c) {
+          // ...this might be used to effect on-page changes
+        },
+        getComponentList: function getComponentList() {
+          return components;
+        }
       };
-    }());
+    }(window));
+  </script>
 
-    // Get a reference to this element's template, for template
-    // replacements when elements are actually built on-page.
-    var template = this.querySelector("element[name='webmaker-media'] template");
+  <script>
+    /**
+     * If we do not have Popcorn available, we try to load it.
+     * While it's loading, we keep an object around that has the
+     * same event API for addeding "things" to be popped, but 
+     * rather than doing anything with them, it just queues them
+     * until Popcorn's up and running, at which point we clear
+     * the queue, processing every addition before letting the
+     * real Popcorn take over.
+     */
+    (function(global){
+      var fnCache = [];
 
-    // Then, specify what should happen when an element gets built,
-    // by extending its prototype with a readyCallback function.
-    this.register({
-      prototype: {
-        readyCallback: function() {
-          var element = this;
+      // load popcorn if we don't have it available already
+      if(!global.Popcorn) {
+        // Stub out Popcorn until it loads
+        global.Popcorn = function( fn ) {
+          fnCache.push( fn );      
+        };
+        
+        // Add popcorn as a script dependency
+        var popcornScript = document.createElement("script");
+        popcornScript.onload = function(){
+          Popcorn(function(){
+            // Clear out the function cache now that Popcorn is ready
+            fnCache.forEach(function(f) { f(); });
+          });
+        };
+        popcornScript.src = "http://cdn.popcornjs.org/code/dist/popcorn-complete.js";
+        document.head.appendChild(popcornScript);
+      }
+    }(window));
+  </script>
 
-          // Get the width and height, if the on-page code specifies them.
-          var w = this.attributes.getNamedItem("width");
-          w = w ? w.nodeValue : false;
-          var h = this.attributes.getNamedItem("height");
-          h = h ? h.nodeValue : false;
 
-          // Perform template replacing; this will likely happen automatically
-          // once the spec is finalised, but for now we do it manually.
-          var ocontent = this.textContent;
-          var ihtml = template.innerHTML;
-          var newContent = ihtml.replace("<content></content>",ocontent);
-          this.innerHTML = newContent;
+  <!--
+    The webmaker video component sets up a popcorn'd video container.
+  -->
 
-          // Make sure our media element has the right styles and id
-          var id = getNextCount();
-          var mediaElement = this.querySelector(".media-container");
-          mediaElement.id = "webmakerVideo" + id;
-          if(w) { mediaElement.width = w|0; mediaElement.style.width = w; }
-          if(h) { mediaElement.height = h|0; mediaElement.style.height = h; }
 
-          // Also make sure our footnote is easy to query, by
-          // assigning it a unique id that is linked to the mediaElement. 
-          var footnote = this.querySelector("#footnote");
-          footnote.id = footnote.id + id;
+  <h2>webmaker-media</h2>
 
-          // And finally, egister this media element with popcorn.
-          var registerMe = (function(containerId, url) {
-            return function() {
-              var pop = Popcorn.smart(containerId, url);
-              pop.footnoteId = footnote.id;
-              pop.play();
-              window.pop = pop;
+  <p>The webmaker-media element can be used to put a video on your page. It comes
+    with an <code>href</code> element that you can set to a youtube video page 
+    (or vimeo, or ...) and it will show up as an embedded video on your page.</p>
+
+  <h3>attributes:</h3>
+  <dl>
+    <dt>href</dt>
+    <dd>A link to a video on the web</dd>
+
+    <dt>width</dt>
+    <dd>Optional embedded element width; if not 0, you must include a unit like % or px or em.</dd>
+
+    <dt>height</dt>
+    <dd>Optional embedded element height; if not 0, you must include a unit like % or px or em.</dd>
+  </dl>
+
+  <element name="webmaker-media" attributes="href width height">
+    <template>
+      <div class="webmaker-media">
+        <div class="media-container"></div>
+        <div id="footnote" class="footnote"></div>
+      </div>
+    </template>
+
+    <script>
+      // A helper function we'll use to track distinct media
+      // elements. All code in <element> -> <script> blocks is
+      // execute once, when the element's definition is read 
+      // by the browser.
+      var getNextCount = (function() {
+        var webmakerVideoElementCount = 0;
+        return function() {
+          return webmakerVideoElementCount++;
+        };
+      }());
+
+      // Get a reference to this element's template, for template
+      // replacements when elements are actually built on-page.
+      var template = this.querySelector("element[name='webmaker-media'] template");
+
+      // Then, specify what should happen when an element gets built,
+      // by extending its prototype with a readyCallback function.
+      this.register({
+        prototype: {
+          readyCallback: function() {
+            var element = this;
+
+            // Get the width and height, if the on-page code specifies them.
+            var w = this.attributes.getNamedItem("width");
+            w = w ? w.nodeValue : false;
+            var h = this.attributes.getNamedItem("height");
+            h = h ? h.nodeValue : false;
+
+            // Perform template replacing; this will likely happen automatically
+            // once the spec is finalised, but for now we do it manually.
+            var ocontent = this.textContent;
+            var ihtml = template.innerHTML;
+            var newContent = ihtml.replace("<content></content>",ocontent);
+            this.innerHTML = newContent;
+
+            // Make sure our media element has the right styles and id
+            var id = getNextCount();
+            var mediaElement = this.querySelector(".media-container");
+            mediaElement.id = "webmakerVideo" + id;
+            if(w) { mediaElement.width = w|0; mediaElement.style.width = w; }
+            if(h) { mediaElement.height = h|0; mediaElement.style.height = h; }
+
+            // Also make sure our footnote is easy to query, by
+            // assigning it a unique id that is linked to the mediaElement. 
+            var footnote = this.querySelector("#footnote");
+            footnote.id = footnote.id + id;
+
+            // And finally, egister this media element with popcorn.
+            var registerMe = (function(containerId, url) {
+              return function() {
+                var pop = Popcorn.smart(containerId, url);
+                pop.footnoteId = footnote.id;
+                pop.play();
+                window.pop = pop;
+              }
+            }("#" + mediaElement.id, this.attributes.getNamedItem("href").nodeValue));
+            Popcorn(registerMe);
+
+            // register with the WebMaker controller
+            WebMaker.addComponent(this);
+          }
+        }
+      });
+    </script>
+  </element>
+
+
+  <!--
+    text pop event.
+  -->
+
+  <h2>webmaker-text</h2>
+
+  <p>The webmaker-text element can be used to put text on your page, which --if you also have
+    a media element and assign it a start and end time-- will play alongside your video
+    between the indicated start and end times.</p>
+
+  <h3>attributes:</h3>
+  <dl>
+    <dt>start</dt>
+    <dd>Optional start time, if used in conjunction with a media element.</dd>
+
+    <dt>end</dt>
+    <dd>Optional end time, if used in conjunction with a media element.</dd>
+  </dl>
+
+  <element name="webmaker-text" attributes="start end">
+    <template></template>
+
+    <script>
+      // our "what to do when this element is built" code:
+      this.register({
+        prototype: {
+          readyCallback: function() {
+            var text = this.innerHTML;
+
+            // If there is a media element, we link ourselves to it.
+            if(document.querySelectorAll("webmaker-media").length > 0) {
+              // we'll need the start and end times for showing this text:
+              var start = this.attributes.getNamedItem("start").nodeValue;
+              var end = this.attributes.getNamedItem("end").nodeValue;
+
+              // Our text is no longer necessary "on-page"
+              this.innerHTML = "";
+
+              // To make it all work, we register a text pop event:
+              Popcorn(function() {
+                window.pop.footnote({
+                  start: start,
+                  end: end,
+                  text: text,
+                  fontSize: 20,
+                  target: window.pop.footnoteId
+                });
+              });
             }
-          }("#" + mediaElement.id, this.attributes.getNamedItem("href").nodeValue));
-          Popcorn(registerMe);
 
-          // register with the WebMaker controller
-          WebMaker.addComponent(this);
+            // If there is no media element, just show this text as a normal
+            // block of text on the page.
+            else { this.style.display = "block"; }
+
+            // also register with the WebMaker controller
+            WebMaker.addComponent(this);
+          }
         }
-      }
-    });
-  </script>
-</element>
+      });
+    </script>
+  </element>
 
 
-<!--
-  text pop event.
--->
-<element name="webmaker-text" attributes="start end">
-  <template></template>
+  <!--
+    an image element that may or may not be Popcorn'd
+  -->
 
-  <script>
-    // our "what to do when this element is built" code:
-    this.register({
-      prototype: {
-        readyCallback: function() {
-          var text = this.innerHTML;
+  <h2>webmaker-image</h2>
 
-          // If there is a media element, we link ourselves to it.
-          if(document.querySelectorAll("webmaker-media").length > 0) {
-            // we'll need the start and end times for showing this text:
-            var start = this.attributes.getNamedItem("start").nodeValue;
-            var end = this.attributes.getNamedItem("end").nodeValue;
+  <p>The webmaker-image element can be used to put an image on your page, which --if you also have
+    a media element and assign it a start and end time-- will play alongside your video
+    between the indicated start and end times.</p>
 
-            // Our text is no longer necessary "on-page"
-            this.innerHTML = "";
+  <h3>attributes:</h3>
+  <dl>
+    <dt>start</dt>
+    <dd>Optional start time, if used in conjunction with a media element.</dd>
 
-            // To make it all work, we register a text pop event:
-            Popcorn(function() {
-              window.pop.footnote({
-                start: start,
-                end: end,
-                text: text,
-                fontSize: 20,
-                target: window.pop.footnoteId
+    <dt>end</dt>
+    <dd>Optional end time, if used in conjunction with a media element.</dd>
+  </dl>
+
+  <element name="webmaker-image" attributes="start end src alt">
+    <template>
+      <img src="">
+    </template>
+
+    <script>
+      // our element template:
+      var template = this.querySelector("template");
+
+      // our "what to do when this element is built" code:
+      this.register({
+        prototype: {
+          readyCallback: function() {
+            // Get the image src and alt attributes, and perform
+            // some template replacing so we get our <img> element.
+            var src = this.attributes.getNamedItem("src").nodeValue;
+            var alt = this.attributes.getNamedItem("alt").nodeValue;
+            this.innerHTML = template.innerHTML;
+            this.querySelector("img").src = src;
+            this.querySelector("img").alt = alt;
+
+            // If there is a media element, we link ourselves to it.
+            if(document.querySelectorAll("webmaker-media").length > 0) {
+              var start = this.attributes.getNamedItem("start").nodeValue;
+              var end = this.attributes.getNamedItem("end").nodeValue;
+
+              // register an image event
+              Popcorn(function() {
+                var props = {
+                  start: start,
+                  end: end,
+                  src: src,
+                  alt: alt,
+                  target: window.pop.footnoteId
+                };
+                window.pop.image(props);
               });
-            });
+
+              // Prevent the image from showing up on-page now that it's popped.
+              this.innerHTML = "";
+            }
+
+            // register with the WebMaker controller
+            WebMaker.addComponent(this);
           }
-
-          // If there is no media element, just show this text as a normal
-          // block of text on the page.
-          else { this.style.display = "block"; }
-
-          // also register with the WebMaker controller
-          WebMaker.addComponent(this);
         }
-      }
-    });
-  </script>
-</element>
+      });
+    </script>
+  </element>
 
 
-<!--
-  an image element that may or may not be Popcorn'd
--->
-<element name="webmaker-image" attributes="start end src alt">
-  <template>
-    <img src="">
-  </template>
+  <!--
+    a Google map
+  -->
 
-  <script>
-    // our element template:
-    var template = this.querySelector("template");
+  <h2>webmaker-map</h2>
 
-    // our "what to do when this element is built" code:
-    this.register({
-      prototype: {
-        readyCallback: function() {
-          // Get the image src and alt attributes, and perform
-          // some template replacing so we get our <img> element.
-          var src = this.attributes.getNamedItem("src").nodeValue;
-          var alt = this.attributes.getNamedItem("alt").nodeValue;
-          this.innerHTML = template.innerHTML;
-          this.querySelector("img").src = src;
-          this.querySelector("img").alt = alt;
+  <p>The webmaker-map element can be used to put a google map on your page, which --if you
+    also have a media element and assign it a start and end time-- will play alongside your
+    video between the indicated start and end times.</p>
 
-          // If there is a media element, we link ourselves to it.
-          if(document.querySelectorAll("webmaker-media").length > 0) {
-            var start = this.attributes.getNamedItem("start").nodeValue;
-            var end = this.attributes.getNamedItem("end").nodeValue;
+  <h3>attributes:</h3>
+  <dl>
+    <dt>location</dt>
+    <dd>A google maps location. Anything you usually type when looking for a place in google
+      maps, you can fill in here.</dd>
 
-            // register an image event
-            Popcorn(function() {
-              var props = {
-                start: start,
-                end: end,
-                src: src,
-                alt: alt,
-                target: window.pop.footnoteId
-              };
-              window.pop.image(props);
-            });
+    <dt>start</dt>
+    <dd>Optional start time, if used in conjunction with a media element.</dd>
 
-            // Prevent the image from showing up on-page now that it's popped.
-            this.innerHTML = "";
-          }
+    <dt>end</dt>
+    <dd>Optional end time, if used in conjunction with a media element.</dd>
+  </dl>
 
-          // register with the WebMaker controller
-          WebMaker.addComponent(this);
+  <element name="webmaker-map" attributes="start end location width height">
+    <template>
+      <style scoped>
+        iframe {
+          display: block;
+          border: 1px solid black;
         }
-      }
-    });
-  </script>
-</element>
+      </style>
+      <content></content>
+    </template>
 
+    <script>
+      // our element template:
+      var template = this.querySelector("template");
 
-<!--
-  a Google map
--->
-<element name="webmaker-map" attributes="start end location width height">
-  <template>
-    <style scoped>
-      iframe {
-        display: block;
-        border: 1px solid black;
-      }
-    </style>
-    <content></content>
-  </template>
+      // our "what to do when this element is built" code:
+      this.register({
+        prototype: {
+          readyCallback: function() {
+            var location = this.attributes.getNamedItem("location").nodeValue;
+            // Get the width and height, if the on-page code specifies them.
+            var w = this.attributes.getNamedItem("width");
+            w = w ? w.nodeValue : false;
+            var h = this.attributes.getNamedItem("height");
+            h = h ? h.nodeValue : false;
 
-  <script>
-    // our element template:
-    var template = this.querySelector("template");
-
-    // our "what to do when this element is built" code:
-    this.register({
-      prototype: {
-        readyCallback: function() {
-          var location = this.attributes.getNamedItem("location").nodeValue;
-          // Get the width and height, if the on-page code specifies them.
-          var w = this.attributes.getNamedItem("width");
-          w = w ? w.nodeValue : false;
-          var h = this.attributes.getNamedItem("height");
-          h = h ? h.nodeValue : false;
-
-          var iframe = '' +
-          '<iframe class="webmaker-map"' + 
-          (w ? ' width="' + w + '"' : '') +
-          (h ? ' height="' + h + '"' : '') +
-          ' frameborder="1" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.ca/maps?f=q&source=s_q&hl=en&geocode=&q=' + location.replace(/ /g,'+') + '&t=m&output=embed"></iframe>';
-          var content = template.innerHTML.replace("<content></content>", iframe);
-          this.innerHTML = content;
-
-          // If there is a media element, we link ourselves to it.
-          if(document.querySelectorAll("webmaker-media").length > 0) {
-            var start = this.attributes.getNamedItem("start").nodeValue;
-            var end = this.attributes.getNamedItem("end").nodeValue;
-
-            // register a google map event
-            Popcorn(function() {
-              window.pop.googlemap({
-                start: start,
-                end: end,
-                location: location,
-                zoom: 20,
-                width: w,
-                height: h,
-                target: window.pop.footnoteId
-              });
-            })
-
-            // And clear the regular element
-            this.innerHTML = "";
-          }
-
-          // register with the WebMaker controller
-          WebMaker.addComponent(this);
-        }
-      }
-    });
-  </script>
-</element>
-
-
-<!--
-  A Wikipedia page
--->
-<element name="webmaker-wiki" attributes="start end">
-  <!-- our HTML template code -->
-  <template>
-    <style scoped>
-      iframe {
-        display: block;
-        border: 1px solid black;
-      }
-    </style>
-    <content></content>
-  </template>
-
-  <script>
-    // our element template:
-    var template = this.querySelector("template");
-
-    // our "what to do when this element is built" code:
-    this.register({
-      prototype: {
-        readyCallback: function() {
-          var url = this.attributes.getNamedItem("src").nodeValue;
-          var w = this.attributes.getNamedItem("width");
-          w = w ? w.nodeValue : false;
-          var h = this.attributes.getNamedItem("height");
-          h = h ? h.nodeValue : false;
-
-          // Perform templating
-          var iframe = '' +
-            '<iframe class="webmaker-wiki"' + 
+            var iframe = '' +
+            '<iframe class="webmaker-map"' + 
             (w ? ' width="' + w + '"' : '') +
             (h ? ' height="' + h + '"' : '') +
-            ' frameborder="0" scrolling="yes" marginheight="0" marginwidth="0" src="'+url+'?&printable=yes"></iframe>';
-          var content = template.innerHTML.replace("<content></content>", iframe);
-          this.innerHTML = content;
+            ' frameborder="1" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.ca/maps?f=q&source=s_q&hl=en&geocode=&q=' + location.replace(/ /g,'+') + '&t=m&output=embed"></iframe>';
+            var content = template.innerHTML.replace("<content></content>", iframe);
+            this.innerHTML = content;
 
-          // If there is a media element, we link ourselves to it.
-          if(document.querySelectorAll("webmaker-media").length > 0) {
-            var start = this.attributes.getNamedItem("start").nodeValue;
-            var end = this.attributes.getNamedItem("end").nodeValue;
+            // If there is a media element, we link ourselves to it.
+            if(document.querySelectorAll("webmaker-media").length > 0) {
+              var start = this.attributes.getNamedItem("start").nodeValue;
+              var end = this.attributes.getNamedItem("end").nodeValue;
 
-            // register a text pop event, but with HTML instead of plain text.
-            Popcorn(function() {
-              window.pop.footnote({
-                start: start,
-                end: end,
-                text: content,
-                width: w,
-                height: h,
-                target: window.pop.footnoteId
-              });
-            });
+              // register a google map event
+              Popcorn(function() {
+                window.pop.googlemap({
+                  start: start,
+                  end: end,
+                  location: location,
+                  zoom: 20,
+                  width: w,
+                  height: h,
+                  target: window.pop.footnoteId
+                });
+              })
 
-            // And clear the regular element
-            this.innerHTML = "";
+              // And clear the regular element
+              this.innerHTML = "";
+            }
+
+            // register with the WebMaker controller
+            WebMaker.addComponent(this);
           }
-
-          // register with the WebMaker controller
-          WebMaker.addComponent(this);
         }
-      }
-    });
-  </script>
-</element>
+      });
+    </script>
+  </element>
 
 
-<!--
-  And everyone needs badges!
--->
-<element name="webmaker-badge-list">
-  <!-- our HTML template code -->
-  <template>
-    <div id="bhwidget">
+  <!--
+    A Wikipedia page
+  -->
+
+  <h2>webmaker-wiki</h2>
+
+  <p>The webmaker-wiki element can be used to put a wikipedia article on your page, which
+    --if you also have a media element and assign it a start and end time-- will play
+    alongside your video between the indicated start and end times.</p>
+
+  <h3>attributes:</h3>
+  <dl>
+    <dt>start</dt>
+    <dd>Optional start time, if used in conjunction with a media element.</dd>
+
+    <dt>end</dt>
+    <dd>Optional end time, if used in conjunction with a media element.</dd>
+  </dl>
+
+  <element name="webmaker-wiki" attributes="start end">
+    <!-- our HTML template code -->
+    <template>
+      <style scoped>
+        iframe {
+          display: block;
+          border: 1px solid black;
+        }
+      </style>
       <content></content>
-    </div>
-  </template>
+    </template>
 
-  <script>
-    // As there is a jQuery dependency, so let's resolve that.
-    if(!window.jQuery) {
-      var script = document.createElement("script");
-      script.src = "http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js";
-      document.head.appendChild(script); }
+    <script>
+      // our element template:
+      var template = this.querySelector("template");
 
-    // our element template:
-    var template = this.querySelector("template");
+      // our "what to do when this element is built" code:
+      this.register({
+        prototype: {
+          readyCallback: function() {
+            var url = this.attributes.getNamedItem("src").nodeValue;
+            var w = this.attributes.getNamedItem("width");
+            w = w ? w.nodeValue : false;
+            var h = this.attributes.getNamedItem("height");
+            h = h ? h.nodeValue : false;
 
-    // our "what to do when this element is built" code:
-    this.register({
-      prototype: {
-        readyCallback: function() {
-          this.innerHTML = template.innerHTML;
+            // Perform templating
+            var iframe = '' +
+              '<iframe class="webmaker-wiki"' + 
+              (w ? ' width="' + w + '"' : '') +
+              (h ? ' height="' + h + '"' : '') +
+              ' frameborder="0" scrolling="yes" marginheight="0" marginwidth="0" src="'+url+'?&printable=yes"></iframe>';
+            var content = template.innerHTML.replace("<content></content>", iframe);
+            this.innerHTML = content;
 
-          // This code is example code for putting a badge listing on your website
-          var runCode = function() {
-            var url = "http://beta.openbadges.org/displayer/5797/group/1957.json";
-            jQuery.getJSON(url, function(data) {
-              var i = 0;
-              var widgetcode = "<table>";
-              while (i < data.badges.length < 4) {
-                var badgeName = data.badges[i].assertion.badge.name;
-                var imgUrl = data.badges[i].assertion.badge.image;
-                var critUrl = data.badges[i].assertion.badge.criteria;
-                var assertUrl = data.badges[i].hostedUrl;
-                widgetcode = widgetcode + "<tr><td align='center'>";
-                widgetcode = widgetcode + "<a href='" + assertUrl + "'><img src='" + imgUrl + "' width='50' height='50' border='0'/></a><br /><a href='" + critUrl + "'>" + badgeName + "</a>";
-                widgetcode = widgetcode + "</td></tr>";
-                i += 1;
-                if (i === data.badges.length || i === 3) {
-                  widgetcode = widgetcode + "</table>";
-                  document.getElementById("bhwidget").innerHTML = widgetcode;
-                  return;
-                }
-              }
-            });
-          };
+            // If there is a media element, we link ourselves to it.
+            if(document.querySelectorAll("webmaker-media").length > 0) {
+              var start = this.attributes.getNamedItem("start").nodeValue;
+              var end = this.attributes.getNamedItem("end").nodeValue;
 
-          // Once set up, try to kickstart the badge code injection.
-          (function tryBadgeList() {
-            if(window.jQuery) { runCode(); }
-            else { setTimeout(tryBadgeList, 500); }
-          }());
+              // register a text pop event, but with HTML instead of plain text.
+              Popcorn(function() {
+                window.pop.footnote({
+                  start: start,
+                  end: end,
+                  text: content,
+                  width: w,
+                  height: h,
+                  target: window.pop.footnoteId
+                });
+              });
 
-          // register with the WebMaker controller
-          WebMaker.addComponent(this);
+              // And clear the regular element
+              this.innerHTML = "";
+            }
+
+            // register with the WebMaker controller
+            WebMaker.addComponent(this);
+          }
         }
-      }
-    });
-  </script>
-</element>
+      });
+    </script>
+  </element>
+
+
+  <!--
+    And everyone needs badges!
+  -->
+
+  <h2>webmaker-badge-list</h2>
+
+  <p>The webmaker-badge-list element can be used to put your badge listing on a page.</p>
+
+  <element name="webmaker-badge-list">
+    <!-- our HTML template code -->
+    <template>
+      <div id="bhwidget">
+        <content></content>
+      </div>
+    </template>
+
+    <script>
+      // As there is a jQuery dependency, so let's resolve that.
+      if(!window.jQuery) {
+        var script = document.createElement("script");
+        script.src = "http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js";
+        document.head.appendChild(script); }
+
+      // our element template:
+      var template = this.querySelector("template");
+
+      // our "what to do when this element is built" code:
+      this.register({
+        prototype: {
+          readyCallback: function() {
+            this.innerHTML = template.innerHTML;
+
+            // This code is example code for putting a badge listing on your website
+            var runCode = function() {
+              var url = "http://beta.openbadges.org/displayer/5797/group/1957.json";
+              jQuery.getJSON(url, function(data) {
+                var i = 0;
+                var widgetcode = "<table>";
+                while (i < data.badges.length < 4) {
+                  var badgeName = data.badges[i].assertion.badge.name;
+                  var imgUrl = data.badges[i].assertion.badge.image;
+                  var critUrl = data.badges[i].assertion.badge.criteria;
+                  var assertUrl = data.badges[i].hostedUrl;
+                  widgetcode = widgetcode + "<tr><td align='center'>";
+                  widgetcode = widgetcode + "<a href='" + assertUrl + "'><img src='" + imgUrl + "' width='50' height='50' border='0'/></a><br /><a href='" + critUrl + "'>" + badgeName + "</a>";
+                  widgetcode = widgetcode + "</td></tr>";
+                  i += 1;
+                  if (i === data.badges.length || i === 3) {
+                    widgetcode = widgetcode + "</table>";
+                    document.getElementById("bhwidget").innerHTML = widgetcode;
+                    return;
+                  }
+                }
+              });
+            };
+
+            // Once set up, try to kickstart the badge code injection.
+            (function tryBadgeList() {
+              if(window.jQuery) { runCode(); }
+              else { setTimeout(tryBadgeList, 500); }
+            }());
+
+            // register with the WebMaker controller
+            WebMaker.addComponent(this);
+          }
+        }
+      });
+    </script>
+  </element>
+</div>
