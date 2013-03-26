@@ -29,15 +29,30 @@
         addComponent: function addComponent(c) {
           components.push(c);
         },
-        updateComponent: function updateComponent(c) {
-          // ...this might be used to effect on-page changes
-        },
         getComponentList: function getComponentList() {
           return components;
+        },
+        makeEditable: function makeEditable(c) {
+          // Click to edit via contentEditable
+          c.addEventListener("click", function(evt) {
+            c.contentEditable = true;
+            c.blur();
+            c.focus();
+          }, false);
+
+          // Blur to end edit, and to commit the edits to not
+          // just this element, but also its "real" counterpart.
+          c.addEventListener("blur", function(evt) {
+            var e = c;
+            if(e.webmakerElement) { e = e.webmakerElement; }
+            c.removeAttribute("contenteditable");
+            e.innerHTML = c.innerHTML;
+          }, false);
         }
       };
     }(window));
   </script>
+
 
   <script>
     /**
@@ -193,14 +208,20 @@
   </dl>
 
   <element name="webmaker-text" attributes="start end">
-    <template></template>
+    <template>
+      <p><content></content></p>
+    </template>
 
     <script>
+      // our element template:
+      var template = this.querySelector("template");
+
       // our "what to do when this element is built" code:
       this.register({
         prototype: {
           readyCallback: function() {
-            var text = this.innerHTML;
+            var e = this;
+            var text = template.innerHTML.replace("<content></content>",this.innerHTML);
 
             // If there is a media element, we link ourselves to it.
             if(document.querySelectorAll("webmaker-media").length > 0) {
@@ -208,25 +229,35 @@
               var start = this.attributes.getNamedItem("start").nodeValue;
               var end = this.attributes.getNamedItem("end").nodeValue;
 
-              // Our text is no longer necessary "on-page"
-              this.innerHTML = "";
-
               // To make it all work, we register a text pop event:
               Popcorn(function() {
-                window.pop.footnote({
+                var props = {
                   start: start,
                   end: end,
                   text: text,
                   fontSize: 20,
                   target: window.pop.footnoteId
-                });
+                };
+                window.pop.footnote(props);
+
+                // bind click handling
+                var element = window.pop.getTrackEvent(window.pop.getLastTrackEventId())._container;
+                e.popcornElement = element;
+                element.webmakerElement = e;
+                WebMaker.makeEditable(element);
               });
+
+              // Our text is no longer necessary "on-page"
+              this.style.display = "none";
             }
 
             // If there is no media element, just show this text as a normal
             // block of text on the page.
-            else { this.style.display = "block"; }
-
+            else {
+              this.style.display = "block";
+              WebMaker.makeEditable(this);
+            }
+ 
             // also register with the WebMaker controller
             WebMaker.addComponent(this);
           }
@@ -268,13 +299,16 @@
       this.register({
         prototype: {
           readyCallback: function() {
+            var e = this;
+
             // Get the image src and alt attributes, and perform
             // some template replacing so we get our <img> element.
             var src = this.attributes.getNamedItem("src").nodeValue;
             var alt = this.attributes.getNamedItem("alt").nodeValue;
             this.innerHTML = template.innerHTML;
-            this.querySelector("img").src = src;
-            this.querySelector("img").alt = alt;
+            var image = this.querySelector("img");
+            image.src = src;
+            image.alt = alt;
 
             // If there is a media element, we link ourselves to it.
             if(document.querySelectorAll("webmaker-media").length > 0) {
@@ -291,10 +325,18 @@
                   target: window.pop.footnoteId
                 };
                 window.pop.image(props);
+
+                var element = window.pop.getTrackEvent(window.pop.getLastTrackEventId())._container;
+                e.popcornElement = element;
+                element.webmakerElement = e;
+                WebMaker.makeEditable(element);
               });
 
               // Prevent the image from showing up on-page now that it's popped.
-              this.innerHTML = "";
+              this.style.display = "none";
+            }
+            else {
+              WebMaker.makeEditable(this);
             }
 
             // register with the WebMaker controller
