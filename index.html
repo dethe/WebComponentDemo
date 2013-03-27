@@ -1,62 +1,17 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>A Web Components test</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="component" href="webmaker-components.html">
-  <body>
-    <header>
-      Check out the difference:
-      <a href="index.html">With a media element</a>
-      -
-      <a href="index2.html">Without a media element</a>
-      -
-      the component definition file used:
-      <a href="webmaker-components.html">webmaker-components.html</a>
-      <webmaker-badge-list></webmaker-badge-list>
-    </header>
+<head>
+	<meta charset="utf-8" />
+	<title>HTML5 boilerplate—all you really need…</title>
+	<link rel="stylesheet" type="text/css" href="style.css" />
+	<!--[if IE]>
+		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+</head>
 
-    <section class="container">
-      <h1>Who likes red pandas?</h1>
+<body id="home">
 
-      <webmaker-media href="http://www.youtube.com/watch?v=7jWYUtQZhK0" height="400px"></webmaker-media>
+	<h1>HTML5 boilerplate</h1>
 
-      <webmaker-text start="0" end="10">Alright, so here's the deal. I love red pandas. This is not particularly
-        a secret, and it's not very hard to see why. They're ridiculously cute,
-        look very fluffy, and seem very playful.</webmaker-text>
-
-      <webmaker-text start="10" end="13">(They're also endangered in the wild)</webmaker-text>
-
-      <webmaker-text start="13" end="23">To be fair, they're ridiculous animals from a zoological point of view.
-        The red panda has a body plan designed for predation, but instead it
-        eats mostly bamboo leaves.</webmaker-text>
-
-      <webmaker-text start="23" end="33">Bamboo is hard to digest, has very little nutritional value (so you need
-        to eat a LOT of it in a day), and covers a wide area for the energy
-        you get out of it. So it's really silly as a food source.</webmaker-text>
-
-      <webmaker-text start="35" end="45"><h2>This is what wikipedia has to say about them:</h2></webmaker-text>
-
-      <webmaker-wiki start="35" end="45" width="100%" height="400px" src="http://en.wikipedia.org/wiki/Red_panda"></webmaker-wiki>
-
-      <webmaker-text start="45" end="66"><h2>And this is where you can find some cute ones:</h2></webmaker-text>
-
-      <webmaker-map start="45" end="66" width="100%" height="400px" location="Maruyama Zoo"></webmaker-map>
-
-      <webmaker-text start="66" end="67">This is a demontrator for
-      <a href="https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/components/index.html">Web Components</a>
-      and
-      <a href="https://dvcs.w3.org/hg/webcomponents/raw-file/tip/spec/custom/index.html">Custom elements</a>,
-      using the toolkitchen
-      <a href="https://github.com/toolkitchen/WebComponents">web components</a>
-      and
-      <a href="https://github.com/toolkitchen/CustomElements">custom elements</a>
-      polyfills.</webmaker-text>
-    </section>
-
-    <!-- temporary polyfill, used until browsers fully implement web components -->
-    <script src="platform/WebComponents/web-components.js"></script>
-    <script src="platform/CustomElements/custom-elements.js"></script>
-  </body>
+</body>
 </html>
