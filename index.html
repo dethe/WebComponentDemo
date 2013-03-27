@@ -3,15 +3,17 @@
 <head>
 	<meta charset="utf-8" />
 	<title>HTML5 boilerplate—all you really need…</title>
-	<link rel="stylesheet" type="text/css" href="style.css" />
-	<!--[if IE]>
-		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-	<![endif]-->
+	<link rel="stylesheet" href="style.css" />
+    <link rel="component" href="waterbear-components.html">
 </head>
 
 <body id="home">
 
 	<h1>HTML5 boilerplate</h1>
 
+
+    <!-- temporary polyfill, used until browsers fully implement web components -->
+    <script src="platform/WebComponents/web-components.js"></script>
+    <script src="platform/CustomElements/custom-elements.js"></script>
 </body>
 </html>

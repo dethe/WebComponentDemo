@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Waterbear Web Components</title>
+	<link rel="stylesheet" type="text/css" href="style.css" />
+</head>
+
+<body id="home">
+
+	<h1>Waterbear Web Components</h1>
+
+<element name="waterbear-step" attributes="group id">
+    <template>
+      <div class="block step">
+        <div class="block-header">
+          <content select="waterbear-socket"></content>
+        </div>
+      </div>
+    </template>
+
+    <script>
+      // All code in <element> -> <script> blocks is
+      // execute once, when the element's definition is read
+      // by the browser.
+
+      // Get a reference to this element's template, for template
+      // replacements when elements are actually built on-page.
+      var template = this.querySelector("element[name='waterbear-step'] template");
+
+      // Then, specify what should happen when an element gets built,
+      // by extending its prototype with a readyCallback function.
+      this.register({
+        prototype: {
+          readyCallback: function() {
+            // Set up parent/child relationships
+            // Ensure we have an id
+            // Ensure we have a sequence number
+            var element = this;
+
+            // Perform template replacing; this will likely happen automatically
+            // once the spec is finalised, but for now we do it manually.
+            var children = this.children;
+            // This is one place to hook in to only replace content of appropriate type
+            var parent = innerHeader.parentElement;
+            parent.removeChild(innerHeader);
+            Array.prototype.slice.call(this.children).forEach(function(child){
+                if (child.tagName === 'waterbear-step'){
+                    parent.appendChild(child);
+                }else{
+                    console.log('%s elements are not allowed in the block header', child.tagName);
+                    child.parentElement.removeChild(child);
+                }
+            });
+          }
+        }
+      });
+    </script>
+  </element>
+
+
+</body>
+</html>
