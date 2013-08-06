@@ -3,17 +3,73 @@
 <head>
 	<meta charset="utf-8" />
 	<title>HTML5 boilerplate—all you really need…</title>
-	<link rel="stylesheet" href="style.css" />
-    <link rel="component" href="waterbear-components.html">
+	<link rel="stylesheet" href="style.css">
+    <!-- temporary polyfill, used until browsers fully implement web components -->
+    <script src="polymer/polymer-all/polymer/polymer.js"></script>
+    <!--script src="polymer/polymer.min.js"></script-->
+    <link rel="import" href="waterbear-components.html">
+    <style>
+        body{
+            opacity: 0;
+        }
+    </style>
+    <script>
+      document.addEventListener('WebComponentsReady', function() {
+        console.log('WebComponentsReady');
+        // show body now that everything is ready
+        document.body.style.opacity = 1;
+        // testComponent();
+        // testExtendedComponent();
+        // testPolyComponent();
+      });
+    </script>
 </head>
 
 <body id="home">
 
 	<h1>HTML5 boilerplate</h1>
 
+    <wb-component class="test">
+        <ul>
+            <li>One</li>
+            <li>Two</li>
+            <li>Three</li>
+        </ul>
+    </wb-component>
 
-    <!-- temporary polyfill, used until browsers fully implement web components -->
-    <script src="platform/WebComponents/web-components.js"></script>
-    <script src="platform/CustomElements/custom-elements.js"></script>
+    <button is="wb-file-button" class="testExtended">
+        Awesome button, dude!
+    </button>
+
+    <wb-polycomponent class="testPoly">
+        <ul>
+            <li>One</li>
+            <li>Two</li>
+            <li>Three</li>
+        </ul>
+    </wb-polycomponent>
+
+    <script>
+      // hide body to prevent FOUC
+
+      function testComponent(){
+        console.log('testing component');
+        var test = document.querySelector('.test');
+        test.appendChild(document.createElement('hr'));
+        test.removeChild(test.firstElementChild);
+        test.setAttribute('href', 'http://livingcode.org/');
+      }
+      function testExtendedComponent(){
+        console.log('testing extended component');
+        var test = document.querySelector('.testExtended');
+        test.appendChild(document.createElement('img'));
+      }
+      function testPolyComponent(){
+        console.log('testing poly component');
+        var test = document.querySelector('.testPoly');
+        test.appendChild(document.createElement('div'));
+      }
+    </script>
+
 </body>
 </html>

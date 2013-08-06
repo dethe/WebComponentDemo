@@ -9,55 +9,90 @@
 <body id="home">
 
 	<h1>Waterbear Web Components</h1>
-
-<element name="waterbear-step" attributes="group id">
-    <template>
-      <div class="block step">
-        <div class="block-header">
-          <content select="waterbear-socket"></content>
-        </div>
-      </div>
-    </template>
-
+  <ul>
+    <li><h3>wb-test</h3></li>
+  </ul>
+  <element name="wb-component" constructor="WBComponent">
+    <section>
+      Regular Component
+    </section>
+    <shadow-root>
+      <em>Shadowy Content surrounding my content: <content></content></em>
+    </shadow-root>
     <script>
-      // All code in <element> -> <script> blocks is
-      // execute once, when the element's definition is read
-      // by the browser.
-
-      // Get a reference to this element's template, for template
-      // replacements when elements are actually built on-page.
-      var template = this.querySelector("element[name='waterbear-step'] template");
-
-      // Then, specify what should happen when an element gets built,
-      // by extending its prototype with a readyCallback function.
-      this.register({
-        prototype: {
-          readyCallback: function() {
-            // Set up parent/child relationships
-            // Ensure we have an id
-            // Ensure we have a sequence number
-            var element = this;
-
-            // Perform template replacing; this will likely happen automatically
-            // once the spec is finalised, but for now we do it manually.
-            var children = this.children;
-            // This is one place to hook in to only replace content of appropriate type
-            var parent = innerHeader.parentElement;
-            parent.removeChild(innerHeader);
-            Array.prototype.slice.call(this.children).forEach(function(child){
-                if (child.tagName === 'waterbear-step'){
-                    parent.appendChild(child);
-                }else{
-                    console.log('%s elements are not allowed in the block header', child.tagName);
-                    child.parentElement.removeChild(child);
-                }
-            });
+      if (this !== window){
+        console.log('get the section');
+        var section = this.querySelector('section');
+        console.log('register component');
+        this.register({
+          prototype: {
+            readyCallback: function(event){
+              alert('where is my console?');
+              console.log('component ready: %o', event);
+              this.innerHTML = section.innerHTML;
+            },
+            insertedCallback: function(){
+              console.log('component children inserted: %o', event);
+            },
+            removedCallback: function(){
+              console.log('component children removed: %o', event);
+            }
+            attributeChangedCallback: function(attributeName){
+              console.log('attributeChanged: %s', attributeName);
+            },
+            foo: function(){
+              console.log('foo called');
+            }
           }
-        }
-      });
+        });
+      }else{
+        console.log('Warning: calling script with this === window');
+      }
+    </script>
+
+  </element>
+
+  <element name="wb-filebutton" constructor="WBFileButton" extends="button">
+    <section>
+      Open a File!
+    </section>
+    <script>
+      if (this !== window){
+        var section = this.querySelector('section');
+        this.register({
+          prototype: {
+            readyCallback: function(){
+              this.innerHTML = section.innerHTML;
+            },
+            foo: function(){
+              console.log('filebutton foo called, wants that file back');
+            }
+          }
+        });
+      }
     </script>
   </element>
 
+  <!--polymer-element name="wb-polycomponent">
+    <section>
+      PolyComponent
+    </section>
+    <script>
+      if (this !== window){
+        var section = this.querySelector('section');
+        this.register({
+          prototype: {
+            readyCallback: function(){
+              this.innerHTML = section.innerHTML;
+            },
+            foo: function(){
+              console.log('poly foo called');
+            }
+          }
+        });
+      }
+    </script>
+  </polymer-element-->
 
 </body>
 </html>
