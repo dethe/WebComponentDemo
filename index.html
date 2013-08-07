@@ -5,7 +5,7 @@
 	<title>HTML5 boilerplate—all you really need…</title>
 	<link rel="stylesheet" href="style.css">
     <!-- temporary polyfill, used until browsers fully implement web components -->
-    <script src="polymer/polymer-all/polymer/polymer.js"></script>
+    <script src="polymer.min.js"></script>
     <!--script src="polymer/polymer.min.js"></script-->
     <link rel="import" href="waterbear-components.html">
     <style>
@@ -18,9 +18,9 @@
         console.log('WebComponentsReady');
         // show body now that everything is ready
         document.body.style.opacity = 1;
-        // testComponent();
-        // testExtendedComponent();
-        // testPolyComponent();
+        testComponent();
+        testExtendedComponent();
+        testPolyComponent();
       });
     </script>
 </head>
@@ -41,33 +41,54 @@
         Awesome button, dude!
     </button>
 
-    <wb-polycomponent class="testPoly">
+    <wb-poly-component class="testPoly">
         <ul>
             <li>One</li>
             <li>Two</li>
             <li>Three</li>
         </ul>
-    </wb-polycomponent>
+    </wb-poly-component>
 
     <script>
       // hide body to prevent FOUC
 
-      function testComponent(){
-        console.log('testing component');
-        var test = document.querySelector('.test');
-        test.appendChild(document.createElement('hr'));
-        test.removeChild(test.firstElementChild);
+      function testDeclarativeComponent(selector){
+        var test = document.querySelector(selector);
+        console.log('testing component %o', test);
+        // test remove callback
+        test.parentElement.removeChild(test);
+        // test insert callback
+        document.body.appendChild(test);
+        // test attribute changed
         test.setAttribute('href', 'http://livingcode.org/');
+        // test custom method
+        test.foo();
+      }
+
+      function testImperativeComponent(constructor){
+        // test constructor
+        var test = new constructor();
+        // test insert callback
+        document.body.appendChild(test);
+        // test attribute changed
+        test.setAttribute('href', 'http://livingcode.org');
+        // test custom method
+        test.foo();
+        // test remove callback
+        test.parentElement.removeChild(test);
+      }
+
+      function testComponent(){
+        testDeclarativeComponent('.test');
+        testImperativeComponent(WBComponent);
       }
       function testExtendedComponent(){
-        console.log('testing extended component');
-        var test = document.querySelector('.testExtended');
-        test.appendChild(document.createElement('img'));
+        testDeclarativeComponent('.testExtended');
+        testImperativeComponent(WBFileButton);
       }
       function testPolyComponent(){
-        console.log('testing poly component');
-        var test = document.querySelector('.testPoly');
-        test.appendChild(document.createElement('div'));
+        testDeclarativeComponent('.testPoly');
+        testImperativeComponent(WBPolyComponent);
       }
     </script>
 

@@ -13,34 +13,27 @@
     <li><h3>wb-test</h3></li>
   </ul>
   <element name="wb-component" constructor="WBComponent">
-    <section>
-      Regular Component
-    </section>
-    <shadow-root>
-      <em>Shadowy Content surrounding my content: <content></content></em>
-    </shadow-root>
+    <template>
+      <em>Shadowy Content surrounding my content… <blockquote><content></content></blockquote> …and now back to our DOM</em>
+    </template>
     <script>
       if (this !== window){
-        console.log('get the section');
-        var section = this.querySelector('section');
-        console.log('register component');
+        console.log('register component %s', this.getAttribute('name'));
         this.register({
           prototype: {
-            readyCallback: function(event){
-              alert('where is my console?');
-              console.log('component ready: %o', event);
-              this.innerHTML = section.innerHTML;
+            readyCallback: function readyCallback(){
+              console.log('component ready');
             },
-            insertedCallback: function(){
-              console.log('component children inserted: %o', event);
+            insertedCallback: function insertedCallback(){
+              console.log('%s element has been inserted into the DOM', this.nodeName);
             },
-            removedCallback: function(){
-              console.log('component children removed: %o', event);
-            }
-            attributeChangedCallback: function(attributeName){
+            removedCallback: function removedCallback(){
+              console.log('%s element has been removed from the DOM', this.nodeName);
+            },
+            attributeChangedCallback: function attributeChangedCallback(attributeName){
               console.log('attributeChanged: %s', attributeName);
             },
-            foo: function(){
+            foo: function foo(){
               console.log('foo called');
             }
           }
@@ -52,19 +45,28 @@
 
   </element>
 
-  <element name="wb-filebutton" constructor="WBFileButton" extends="button">
-    <section>
-      Open a File!
-    </section>
+  <element name="wb-file-button" constructor="WBFileButton" extends="button">
+    <template>
+      Open a File! <content></content> And scene!
+    </template>
     <script>
       if (this !== window){
-        var section = this.querySelector('section');
+        console.log('register component %s', this.getAttribute('name'));
         this.register({
           prototype: {
-            readyCallback: function(){
-              this.innerHTML = section.innerHTML;
+            readyCallback: function readyCallback(){
+              console.log('extended component ready');
             },
-            foo: function(){
+            insertedCallback: function insertedCallback(){
+              console.log('extended component added to DOM');
+            },
+            removedCallback: function removedCallback(){
+              console.log('extended component removed from DOM');
+            },
+            attributeChangedCallback: function attributeChangedCallback(attributeName){
+              console.log('extended component attribute changed: %s', attributeName);
+            },
+            foo: function foo(){
               console.log('filebutton foo called, wants that file back');
             }
           }
@@ -73,26 +75,32 @@
     </script>
   </element>
 
-  <!--polymer-element name="wb-polycomponent">
-    <section>
-      PolyComponent
-    </section>
+  <polymer-element name="wb-poly-component" attributes="owner color" constructor="WBPolyComponent">
+    <template>
+      <div>PolyComponent of {{owner}}'s shadow… <blockquote><content></content></blockquote> …and we're back</div>
+    </template>
     <script>
-      if (this !== window){
-        var section = this.querySelector('section');
-        this.register({
-          prototype: {
-            readyCallback: function(){
-              this.innerHTML = section.innerHTML;
-            },
-            foo: function(){
-              console.log('poly foo called');
-            }
-          }
-        });
-      }
+      Polymer('wb-poly-component', {
+        ready: function readyCallback(){
+          console.log('poly component ready');
+        },
+        inserted: function insertedCallback(){
+          console.log('poly component added to DOM');
+        },
+        removed: function removedCallback(){
+          console.log('poly component removed from DOM');
+        },
+        attributeChangedCallback: function attributeChangedCallback(attributeName){
+          console.log('poly component attribute changed: %s', attributeName);
+        },
+        foo: function foo(){
+          console.log('poly component foo called');
+        },
+        owner: 'David',
+        color: 'red'
+      });
     </script>
-  </polymer-element-->
+  </polymer-element>
 
 </body>
 </html>

@@ -1,0 +1,31 @@
+# Findings
+
+## Basic Web Components
+
+* Components work declaratively and imperatively
+* Components lifecycle events: readyCallback, insertedCallback, removedCallback, attributeChangedCallback
+* Component shadow dom *not* working as advertised, nor is it working with <template>
+* No way to detect insertion/deletion of child elements (aside from normal DOM events), or to limit which child elements are legal.
+* No way to register specific attributes or events supported
+
+## Polymer Components
+
+* Have a slightly different mechanism for declaring
+* Haven't figured out how to define the constructor yet (same as for Basic Components)
+* Can have data-binding internally
+* Attributes auto-update their internal data bindings, but to data-bind the attributes themselves, expose them by publishing them
+* Internal IDs are not exposed outside of the Shadow DOM, are gathered into an internal map named $ for internal access (this would be *very* handy for Waterbear).
+* Poly components have shorter names for lifecycle events (ready, inserted, removed, attributeChanged)
+* Properties can have default values set in either the prototype or in the ready event. Default properties also tell the Prototype system what type to expect for the property.
+* Properties can be bound to objects, but it is not clear how to use that from outside the Polymer declaration (i.e, from HTML).
+* Polymer elements can declaratively bind to event handlers, which are passed the event, the detail, and the original element which registered for the event.
+* Property change watchers: polymer elements can register for change events on properties with the syntax: [propertyNameChanged]
+* Polymer elements can extend other polymer elements. It is not clear from the docs if they can extend HTML elements or basic webcomponents. If you extend a polymer element you can over-ride its methods, in which case this.super() will call the original method.
+* Polymer elements have .asyncMethod, .fire(), and .asyncFire() methods
+
+
+## Other Goodies Included
+
+* Pointer Events
+* Web Animations
+* Model-driven views, which may allow re-binding (so bound elements could be bound to data loaded via Ajax, for example)
