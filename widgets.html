@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Widgets - testing for web components</title>
+	<link rel="stylesheet" href="style.css">
+    <!-- temporary polyfill, used until browsers fully implement web components -->
+    <script src="polymer.min.js"></script>
+    <script src="channel.js"></script>
+    <link rel="import" href="waterbear-components.html">
+    <style>
+        body{
+            opacity: 0;
+        }
+        .graph{
+            width: 200px;
+            height: 200px;
+            line-height: 200px;
+            background-color: #CDE;
+            float: right;
+            margin-right: 80px;
+        }
+        wb-graph-bar{
+            background-color: red;
+            vertical-align: bottom;
+            position: relative;
+        }
+        wb-graph-bar span{
+            line-height: 16px;
+            position: absolute;
+            bottom: 3px;
+            left: 3px;
+        }
+        wb-graph-bar:nth-of-type(1){
+            background-color: blue;
+        }
+        wb-graph-bar:nth-of-type(2){
+            background-color: green;
+        }
+        wb-graph-bar:nth-of-type(3){
+            background-color: orange;
+        }
+    </style>
+    <script>
+      document.addEventListener('WebComponentsReady', function() {
+        console.log('WebComponentsReady');
+        // show body now that everything is ready
+        document.body.style.opacity = 1;
+      });
+    </script>
+</head>
+<body>
+
+	<h1>Widgets - testing for web components</h1>
+
+    <div class="graph">
+        <wb-graph-bar height="40" channels="green:height"><span>A</span></wb-graph-bar>
+        <wb-graph-bar height="50" channels="blue:height"><span>B</span></wb-graph-bar>
+        <wb-graph-bar height="60" channels="orange:height"><span>C</span></wb-graph-bar>
+    </div>
+
+    <h2>Number inputs, try changing values, dragging on number</h2>
+    <p>A <wb-number-input value="10" channels="green:value" /></p>
+    <p>B <wb-number-input value="20" channels="blue:value" /></p>
+    <p>C <wb-number-input value="30" channels="orange:value" /></p>
+</body>
+</html>

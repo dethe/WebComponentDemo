@@ -4,7 +4,7 @@
 
 * Components work declaratively and imperatively
 * Components lifecycle events: readyCallback, insertedCallback, removedCallback, attributeChangedCallback
-* Component shadow dom *not* working as advertised, nor is it working with <template>
+* Component shadow dom *not* working as advertised, nor is it working with <template>, at least I haven't figured out how to get it to work.
 * No way to detect insertion/deletion of child elements (aside from normal DOM events), or to limit which child elements are legal.
 * No way to register specific attributes or events supported
 
@@ -23,9 +23,83 @@
 * Polymer elements can extend other polymer elements. It is not clear from the docs if they can extend HTML elements or basic webcomponents. If you extend a polymer element you can over-ride its methods, in which case this.super() will call the original method.
 * Polymer elements have .asyncMethod, .fire(), and .asyncFire() methods
 
-
 ## Other Goodies Included
 
 * Pointer Events
 * Web Animations
 * Model-driven views, which may allow re-binding (so bound elements could be bound to data loaded via Ajax, for example)
+
+## Further research needed
+
+* style hooks
+* how do the mechanics of this work on mobile?
+* how do the polymer elements look and work on mobile?
+
+## Wishlist
+
+* style encapsulation
+* DOM4 methods: .remove(), .append(), .prepend(), .before(), .after(), .replace(). Note: these take either a node or a DOMString as an argument. Handy.
+* data channels for pub-sub between elements
+
+### Wishlist elements
+
+* Icon button
+* Halo
+* Card (with flip animation)
+* Form (attached to card)
+* Card Stack Layout
+* Card Fan Layout
+* Card Spread Layout
+* Drawing Canvas
+* Onionskin
+* Movie (generatable from images)
+* Block, Expression, Context, Asset, EventHandler
+* InputConnection, OutputConnection, Wire
+* Microformat Components: hcard, XFN, hCalendar, VoteLinks, hReview, rel-license, rel-tag, XOXO, adr, geo, hAtom, hListing, hMedia, hNews, hProduct, hRecipe, hReview, rel-author, rel-home, rel-payment. Actually, does this make any sense at all. Wouldn't web components defeat the purpose of Microformats?
+
+## Polymer Elements
+
+Includes elements for not directly ui-widgets:
+
+* ajax
+* animation
+* collapse
+* file
+* flex-layout
+* google-jsapi
+* grid-layout
+* jsonp
+* key-helper
+* layout
+* list
+* localstorage
+* media-query
+* meta
+* overlay
+* page
+* selector
+* shared-lib
+* signals
+* view-source-link
+
+And for some straightforward UI:
+
+* accordion
+* collapsible
+* field
+* icon
+* icon-button
+* menu
+* menu-button
+* menu-item
+* nav-arrow
+* overlay
+* ratings
+* sidebar
+* sidebar-menu
+* splitter
+* submenu-item
+* tabs
+* theme-aware
+* toggle-button
+* toolbar

@@ -5,99 +5,197 @@
 	<title>Waterbear Web Components</title>
 	<link rel="stylesheet" type="text/css" href="style.css" />
 </head>
-
-<body id="home">
-
+<body>
 	<h1>Waterbear Web Components</h1>
-  <ul>
-    <li><h3>wb-test</h3></li>
-  </ul>
-  <element name="wb-component" constructor="WBComponent">
-    <template>
-      <em>Shadowy Content surrounding my content… <blockquote><content></content></blockquote> …and now back to our DOM</em>
-    </template>
-    <script>
-      if (this !== window){
-        console.log('register component %s', this.getAttribute('name'));
-        this.register({
-          prototype: {
-            readyCallback: function readyCallback(){
-              console.log('component ready');
-            },
-            insertedCallback: function insertedCallback(){
-              console.log('%s element has been inserted into the DOM', this.nodeName);
-            },
-            removedCallback: function removedCallback(){
-              console.log('%s element has been removed from the DOM', this.nodeName);
-            },
-            attributeChangedCallback: function attributeChangedCallback(attributeName){
-              console.log('attributeChanged: %s', attributeName);
-            },
-            foo: function foo(){
-              console.log('foo called');
-            }
-          }
+  <p>Put documentation here</p>
+  <script>
+    var wb = {
+      parseChannels: function parseChannels(channelstring){
+        var updatedChannels = {};
+        channelpairs = channelstring.toString().split(',').forEach(function(textpair){
+          var pair = textpair.trim().split(':');
+          updatedChannels[pair[1]] = pair[0]; // reverse for lookup convenience
         });
-      }else{
-        console.log('Warning: calling script with this === window');
-      }
-    </script>
-
-  </element>
-
-  <element name="wb-file-button" constructor="WBFileButton" extends="button">
-    <template>
-      Open a File! <content></content> And scene!
-    </template>
-    <script>
-      if (this !== window){
-        console.log('register component %s', this.getAttribute('name'));
-        this.register({
-          prototype: {
-            readyCallback: function readyCallback(){
-              console.log('extended component ready');
-            },
-            insertedCallback: function insertedCallback(){
-              console.log('extended component added to DOM');
-            },
-            removedCallback: function removedCallback(){
-              console.log('extended component removed from DOM');
-            },
-            attributeChangedCallback: function attributeChangedCallback(attributeName){
-              console.log('extended component attribute changed: %s', attributeName);
-            },
-            foo: function foo(){
-              console.log('filebutton foo called, wants that file back');
+        return updatedChannels;
+      },
+      update: function update(elem, propertyname, uncastvalue){
+        var castvalue;
+        switch(typeof elem[propertyname]){
+          case 'number':
+            castvalue = Number(uncastvalue);
+            break;
+          case 'boolean':
+            castvalue = Boolean(uncastvalue);
+            break;
+          case 'string':
+            castvalue = uncastvalue;
+            break;
+          case 'object':
+            if (Array.isArray(elem[propertyname])){
+              throw new Error('We do not deal with array channels yet');
+            }else{
+              throw new Error('We do not deal with object channels yet');
             }
-          }
-        });
+          default:
+            throw new Error('We do not allow null or undefined on channels. Property ' + propertyname + ' [' + elem[propertyname] + '] of ' + elem.localName + ' is of unrecognized type ' + typeof elem[propertyname]);
+        }
+        elem[propertyname] = castvalue;
       }
-    </script>
-  </element>
+    }
+  </script>
 
-  <polymer-element name="wb-poly-component" attributes="owner color" constructor="WBPolyComponent">
-    <template>
-      <div>PolyComponent of {{owner}}'s shadow… <blockquote><content></content></blockquote> …and we're back</div>
-    </template>
+  <!-- 
+    We are creating a pattern language here, where all the componetns work togehter
+
+    This is the root element that defines things like channels for pub/sub, most of the
+    other elements would be expected to extend it.
+  -->
+  <polymer-element name="wb-element" attributes="channels">
     <script>
-      Polymer('wb-poly-component', {
+      Polymer('wb-element', {
         ready: function readyCallback(){
-          console.log('poly component ready');
+          if (this.impl){
+            this.localName = this.impl.localName;
+          }
         },
         inserted: function insertedCallback(){
-          console.log('poly component added to DOM');
+          // console.log('%s inserted', this.localName);
         },
         removed: function removedCallback(){
-          console.log('poly component removed from DOM');
+          // console.log('%s removed', this.localName);
         },
-        attributeChangedCallback: function attributeChangedCallback(attributeName){
-          console.log('poly component attribute changed: %s', attributeName);
+        // attributeChanged: function attributeChangedCallback(attributeName){
+        //   console.log('%s attribute %s changed to %s', this.localname, attributeName, this.getAttribute(attributeName));
+        // },
+        channelsChanged: function channelsChanged(oldvalue){
+          var propertyname;
+          // unsubscribe to old channels
+          for (propertyname in this.channelset){
+            channel.off(this.channelset[propertyname], this);
+          }
+          // update channelset
+          this.channelset = wb.parseChannels(this.channels);
+          // subscribe to new channels
+          for (propertyname in this.channelset){
+            channel.on(this.channelset[propertyname], this);
+          }
         },
-        foo: function foo(){
-          console.log('poly component foo called');
+        channels: '',
+        channelset: {},
+        onChannel: function(channelname, data){
+          for (propertyname in this.channelset){
+            if (this.channelset[propertyname] === channelname){
+              wb.update(this, propertyname, data);
+            }
+          }
         },
-        owner: 'David',
-        color: 'red'
+        updateChannel: function(propertyName, newValue){
+          if (this.channelset[propertyName]){
+            channel.emit(this.channelset[propertyName], newValue);
+          }
+        }
+      });
+    </script>
+  </polymer-element>
+
+  <!-- Base class for draggable elements -->
+  <polymer-element name="wb-draggable-element" extends="wb-element">
+    <script>
+      Polymer('wb-draggable-element', {
+        ready: function readyCallback(){
+          this.super();
+          this.setAttribute('touch-action', 'none');
+          this.addEventListener('pointerdown', this.startDrag.bind(this));
+          this.addEventListener('pointerup', this.endDrag.bind(this));
+          this.addEventListener('pointermove', this.conditionalDrag.bind(this));
+        },
+        startDrag: function startDrag(event){
+          console.log('starting drag for %s', this.localName);
+          this.lastDragX = event.clientX;
+          this.lastDragY = event.clientY;
+          this.dragging = true;
+        },
+        endDrag: function endDrag(event){
+          console.log('ending drag for %s', this.localName);
+          this.dragging = false;
+        },
+        conditionalDrag: function conditionalDrag(event){
+          if (this.dragging){
+            this.dX = event.clientX - this.lastDragX;
+            this.dY = event.clientY - this.lastDragY;
+            this.lastDragX = event.clientX;
+            this.lastDragY = event.clientY;
+            this.drag(event);
+            event.preventDefault();
+            event.stopPropagation();
+          }
+        },
+        drag: function drag(event){
+          console.log('default drag implementation does nothing, over-ride me');
+        },
+        dragging: false,
+        lastDragX: 0,
+        lastDragY: 0        
+      });
+    </script>
+  </polymer-element>
+
+  <!-- Simple extension of an input field -->
+  <polymer-element name="wb-number-input" attributes="value, channels" constructor="WBNumberInput" extends="wb-draggable-element">
+    <template>
+      <input type="number" value="{{value}}" />
+    </template>
+    <script>
+      Polymer('wb-number-input', {
+        ready: function readyCallback(){
+          this.super();
+          this.setAttribute('touch-action', 'pan-y');
+        },
+        valueChanged: function valueChanged(oldvalue){
+          this.updateChannel('value', this.value);
+        },
+        drag: function drag(event, detail, sender){
+          console.log('dragging %s', this.localName);
+          this.value += this.dX;
+        },
+        value: 0
+      });
+    </script>
+  </polymer-element>
+
+  <!-- Simple visual representation for a bar graph -->
+  <polymer-element name="wb-graph-bar" attributes="height, channels" constructor="WBGraphBar" extends="wb-draggable-element">
+    <template>
+      <content></content>
+      <style>
+        @host{
+          :scope{
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+          }
+          @host > div{
+            height: 100%;
+          }
+        }
+      </style>
+    </template>
+    <script>
+      Polymer('wb-graph-bar', {
+        ready: function readyCallback(){
+          this.super();
+          this.setAttribute('touch-action', 'pan-x');
+        },
+        heightChanged: function valueChanged(oldvalue){
+          this.style.height = this.height + 'px';
+          this.updateChannel('height', this.height);
+        },
+        drag: function drag(event, detail, sender){
+          console.log('dragging %s', this.localName);
+          console.log('height: %s, dY: %s', this.height, this.dY);
+          this.height -= this.dY;
+        },
+        height: 50
       });
     </script>
   </polymer-element>
