@@ -163,6 +163,23 @@
     </script>
   </polymer-element>
 
+  <!-- Simple extension of an input field -->
+  <polymer-element name="wb-range-input" attributes="value, min, max, channels" constructor="WBRangeInput" extends="wb-element">
+    <template>
+      <input type="range" value="{{value}}" min="{{min}}" max="{{max}}" />
+    </template>
+    <script>
+      Polymer('wb-range-input', {
+        valueChanged: function valueChanged(oldvalue){
+          this.updateChannel('value', this.value);
+        },
+        value: 0,
+        min: 0,
+        max: 100
+      });
+    </script>
+  </polymer-element>
+
   <!-- Simple visual representation for a bar graph -->
   <polymer-element name="wb-graph-bar" attributes="height, channels" constructor="WBGraphBar" extends="wb-draggable-element">
     <template>
