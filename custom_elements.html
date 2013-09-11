@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Test Custom Elements Polyfill</title>
+	<link rel="stylesheet" href="style.css" />
+	<script src="bower_components/polymer/platform.min.js"></script>
+</head>
+<body>
+	<h1>Test Custom Elements Polyfill</h1>
+	<test-p>This is a test-p element</test-p>
+	<test-div>This is a test-div element</test-div>
+	<script>
+	var TestPProto = Object.create(HTMLElement.prototype);
+	var TestP = document.register('test-p', {
+		prototype: TestPProto,
+		createdCallback: function createdCallback(){
+			console.log('%s created', this.localName);
+		},
+		enteredDocumentCallback: function enteredDocumentCallback(){
+			console.log('%s entered document', this.localName);
+		},
+		leftDocumentCallback: function leftDocumentCallback(){
+			console.log('%s left document', this.localName);
+		},
+		attributeChangedCallback: function attributeChangedCallback(attributeName){
+			console.log('%s attribute %s changed', this.localName, attributeName);
+		},
+		foo: function foo(){
+			console.log('%s method foo() called', this.localName);
+		}
+	});
+	var TestDivProto = Object.create(HTMLElement.prototype);
+	TestDivProto.createdCallback = function createdCallback(){
+		console.log('%s created', this.localName);
+	};
+	TestDivProto.enteredDocumentCallback = function enteredDocumentCallback(){
+		console.log('%s entered document', this.localName);
+	};
+	TestDivProto.leftDocumentCallback = function leftDocumentCallback(){
+		console.log('%s left document', this.localName);
+	};
+	TestDivProto.attributeChangedCallback = function attributeChangedCallback(attributeName){
+		console.log('%s attribute %s changed', this.localName, attributeName);
+	};
+	var TestDiv = document.register('test-div', {prototype: TestDivProto});
+	</script>
+</body>
+</html>
