@@ -3,39 +3,64 @@
 <head>
 	<meta charset="utf-8" />
 	<title>Test Custom Elements Polyfill</title>
-	<link rel="stylesheet" href="style.css" />
+	<!--link rel="stylesheet" href="style.css" /-->
+	<style>
+		test-p{
+			display: block;
+		}
+		test-div{
+			display: block;
+		}
+	</style>
 	<script src="platform.min.js"></script>
 </head>
 <body>
 	<h1>Test Custom Elements Polyfill</h1>
+	<p>This appears to work OK in Firefox, but for some reason not in Chrome, at least, not as far as showing events firing.</p>
 	<test-p>This is a test-p element</test-p>
 	<test-div>This is a test-div element</test-div>
 	<script>
-	var TestPProto = Object.create(HTMLElement.prototype);
-	var TestP = document.register('test-p', {
-		prototype: TestPProto,
-		createdCallback: function createdCallback(){
-			console.log('%s created', this.localName);
+	var TestPProto = Object.create(HTMLElement.prototype, {
+		createdCallback: {
+			value: function createdCallback(){
+				console.log('%s created', this.localName);
+			}
 		},
-		enteredDocumentCallback: function enteredDocumentCallback(){
-			console.log('%s entered document', this.localName);
+		enteredDocumentCallback: {
+			value: function enteredDocumentCallback(){
+				console.log('%s entered document', this.localName);
+			}
 		},
-		leftDocumentCallback: function leftDocumentCallback(){
-			console.log('%s left document', this.localName);
+		leftDocumentCallback: {
+			value: function leftDocumentCallback(){
+				console.log('%s left document', this.localName);
+			}
 		},
-		attributeChangedCallback: function attributeChangedCallback(attributeName){
-			console.log('%s attribute %s changed', this.localName, attributeName);
+		attributeChangedCallback: {
+			value: function attributeChangedCallback(attributeName){
+				console.log('%s attribute %s changed', this.localName, attributeName);
+			}
 		},
-		foo: function foo(){
-			console.log('%s method foo() called', this.localName);
+		foo: {
+			value: function foo(){
+				console.log('%s method foo() called', this.localName);
+			}
 		}
 	});
+	var TestP = document.register('test-p', {prototype: TestPProto });
+
 	var TestDivProto = Object.create(HTMLElement.prototype);
 	TestDivProto.createdCallback = function createdCallback(){
 		console.log('%s created', this.localName);
 	};
+	TestDivProto.readyCallback = function readyCallback(){
+		console.log('%s ready', this.localName);
+	};
 	TestDivProto.enteredDocumentCallback = function enteredDocumentCallback(){
 		console.log('%s entered document', this.localName);
+	};
+	TestDivProto.enteredViewCallback = function enteredViewCallback(){
+		console.log('%s entered view', this.localName);
 	};
 	TestDivProto.leftDocumentCallback = function leftDocumentCallback(){
 		console.log('%s left document', this.localName);
@@ -43,7 +68,13 @@
 	TestDivProto.attributeChangedCallback = function attributeChangedCallback(attributeName){
 		console.log('%s attribute %s changed', this.localName, attributeName);
 	};
+	TestDivProto.foo = function foo(){
+		console.log('%s method foo() called', this.localName);
+	};
 	var TestDiv = document.register('test-div', {prototype: TestDivProto});
+	window.addEventListener('WebComponentsReady', function(){
+		console.log('Web components ready');
+	});
 	</script>
 </body>
 </html>
