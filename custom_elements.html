@@ -16,7 +16,6 @@
 </head>
 <body>
 	<h1>Test Custom Elements Polyfill</h1>
-	<p>This appears to work OK in Firefox, but for some reason not in Chrome, at least, not as far as showing events firing.</p>
 	<test-p>This is a test-p element</test-p>
 	<test-div>This is a test-div element</test-div>
 	<script>
@@ -53,14 +52,8 @@
 	TestDivProto.createdCallback = function createdCallback(){
 		console.log('%s created', this.localName);
 	};
-	TestDivProto.readyCallback = function readyCallback(){
-		console.log('%s ready', this.localName);
-	};
 	TestDivProto.enteredDocumentCallback = function enteredDocumentCallback(){
 		console.log('%s entered document', this.localName);
-	};
-	TestDivProto.enteredViewCallback = function enteredViewCallback(){
-		console.log('%s entered view', this.localName);
 	};
 	TestDivProto.leftDocumentCallback = function leftDocumentCallback(){
 		console.log('%s left document', this.localName);
