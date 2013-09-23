@@ -265,8 +265,8 @@
         var value = this.getAttribute('value') || '';
         var max = this.getAttribute('max') || 100;
         var min = this.getAttribute('min') || 0;
-        this.shadow.innerHTML = '<input type="range" value="' + value + '" min="' + min + '" + max="' + max + '" />';
-        this._value = parseInt(value) || 0;
+        this.shadow.innerHTML = '<input type="range" min="' + min + '" + max="' + max + '" />';
+        this.value = this.getAttribute('value') || 0;
         var self = this;
         this.shadow.firstElementChild.addEventListener('change', function(event){
           self.value = parseInt(event.target.value, 10);
@@ -277,7 +277,7 @@
       value: function attributeChangedCallback(attrName){
         WBDraggableProto.AttributeChangedCallback.call(this, attrName);
         if (attrName === 'value'){
-          this.value = parseInt(this.getAttribute('value'), 10);
+          this.value = this.getAttribute('value');
         }
       }
     },

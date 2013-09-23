@@ -18,6 +18,7 @@
 	<h1>Test Custom Elements Polyfill</h1>
 	<test-p>This is a test-p element</test-p>
 	<test-div>This is a test-div element</test-div>
+	<test-extended-p>This is a test-extended-p element</test-extended-p>
 	<script>
 	var TestPProto = Object.create(HTMLElement.prototype, {
 		createdCallback: {
@@ -68,6 +69,18 @@
 	window.addEventListener('WebComponentsReady', function(){
 		console.log('Web components ready');
 	});
+
+	var TestExtendedPProto = Object.create(TestPProto, {
+		bar: {
+			value: function(){ console.log('bar called'); }
+		},
+		baz: {
+			get: function(){ return 'you baz!'; },
+			set: function(value){ console.log('new baz: %s', value); }
+		}
+	})
+
+	var TestExtendedP = document.register('test-extended-p', {prototype: TestExtendedPProto});
 	</script>
 </body>
 </html>

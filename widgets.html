@@ -5,9 +5,9 @@
 	<title>Widgets - testing for web components</title>
 	<link rel="stylesheet" href="style.css">
     <!-- temporary polyfill, used until browsers fully implement web components -->
-    <script src="polymer.min.js"></script>
+    <script src="platform.min.js"></script>
     <script src="channel.js"></script>
-    <link rel="import" href="waterbear-components.html">
+    <script src="waterbear-components.js"></script>
     <style>
         body{
             opacity: 0;
@@ -15,30 +15,11 @@
         .graph{
             width: 200px;
             height: 200px;
+            position: relative;
             line-height: 200px;
             background-color: #CDE;
             float: right;
             margin-right: 80px;
-        }
-        wb-graph-bar{
-            background-color: red;
-            vertical-align: bottom;
-            position: relative;
-        }
-        wb-graph-bar span{
-            line-height: 16px;
-            position: absolute;
-            bottom: 3px;
-            left: 3px;
-        }
-        wb-graph-bar:nth-of-type(1){
-            background-color: blue;
-        }
-        wb-graph-bar:nth-of-type(2){
-            background-color: green;
-        }
-        wb-graph-bar:nth-of-type(3){
-            background-color: orange;
         }
     </style>
     <script>
@@ -54,19 +35,19 @@
 	<h1>Widgets - testing for web components</h1>
 
     <div class="graph">
-        <wb-graph-bar height="40" channels="green:height"><span>A</span></wb-graph-bar>
-        <wb-graph-bar height="50" channels="blue:height"><span>B</span></wb-graph-bar>
-        <wb-graph-bar height="60" channels="orange:height"><span>C</span></wb-graph-bar>
+        <wb-bar-graph channels="green:height" color="green"><span class="label">A</span></wb-bar-graph>
+        <wb-bar-graph channels="blue:height" color="blue"><span class="label">B</span></wb-bar-graph>
+        <wb-bar-graph channels="orange:height" color="orange"><span class="label">C</span></wb-bar-graph>
     </div>
 
     <h2>Number inputs, try changing values, dragging on number or graph bar</h2>
-    <p>A <wb-number-input value="10" channels="green:value" /></p>
-    <p>B <wb-number-input value="20" channels="blue:value" /></p>
-    <p>C <wb-number-input value="30" channels="orange:value" /></p>
+    <p>A <wb-number-input channels="green:value" min="0" max="100"/></p>
+    <p>B <wb-number-input channels="blue:value" min="0" max="100"/></p>
+    <p>C <wb-number-input channels="orange:value" min="0" max="100"/></p>
     <hr />
-    <p>A <wb-range-input value="10" channels="green:value" max="200" /></p>
-    <p>B <wb-range-input value="20" channels="blue:value" max="200" /></p>
-    <p>C <wb-range-input value="30" channels="orange:value" max="200" /></p>
+    <p>A <wb-range-input value="10" channels="green:value" min="0" max="100" /></p>
+    <p>B <wb-range-input value="20" channels="blue:value" min="0" max="100" /></p>
+    <p>C <wb-range-input value="30" channels="orange:value" min="0" max="100" /></p>
 
     <hr style="clear:both" />
 
