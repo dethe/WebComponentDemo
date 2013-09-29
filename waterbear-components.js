@@ -5,10 +5,10 @@
       var updatedChannels = {};
       channelpairs = channelstring.toString().split(',').forEach(function(textpair){
         var pair = textpair.trim().split(':');
-        console.log('parsing %s=>%s channel', pair[1], pair[0]);
+        // console.log('parsing %s=>%s channel', pair[1], pair[0]);
         updatedChannels[pair[1]] = pair[0]; // reverse for lookup convenience
       });
-      console.log('updated channels: %o', updatedChannels);
+      // console.log('updated channels: %o', updatedChannels);
       return updatedChannels;
     },
     unparseChannels: function unparseChannels(channels){
@@ -19,11 +19,14 @@
       return ret.join(',');
     },
     update: function update(elem, propertyname, uncastvalue){
-      console.log('update %s.%s(%s)', elem.localName, propertyname, uncastvalue);
+      // console.log('update %s.%s(%s)', elem.localName, propertyname, uncastvalue);
       var castvalue;
       switch(typeof elem[propertyname]){
         case 'number':
           castvalue = Number(uncastvalue);
+          if (Number.isNaN(castvalue)){
+            throw new Error('cannot pass NaN on a channel. Property ' + propertyname + ' [' + elem[propertyname] + '] of [' + elem.localName + ' is NaN');
+          }
           break;
         case 'boolean':
           castvalue = Boolean(uncastvalue);
@@ -85,7 +88,7 @@
       },
       set: function(channels){
         // unsubscribe to old channels
-        console.log('channels before: %o', this._channelset);
+        // console.log('channels before: %o', this._channelset);
         for (propertyname in this._channelset){
           channel.off(this._channelset[propertyname], this);
         }
@@ -94,7 +97,7 @@
         for (propertyname in this._channelset){
           channel.on(this._channelset[propertyname], this);
         }
-        console.log('%s channels after: %o', this.localName, this._channelset);
+        // console.log('%s channels after: %o', this.localName, this._channelset);
       },
     },
     // onChannel is a private method called by the pub/sub system
@@ -157,22 +160,21 @@
     // }, 
     startDrag: {
       value: function startDrag(event){
-        console.log('starting drag for %s', this.localName);
+        // console.log('starting drag for %s', this.localName);
         this.lastDragX = event.clientX;
         this.lastDragY = event.clientY;
         this._dragging = true;
-        // console.log('dragging should be true: %o', this);
       }
     },
     endDrag: {
       value: function endDrag(event){
-        console.log('ending drag for %s', this.localName);
+        // console.log('ending drag for %s', this.localName);
         this._dragging = false;
       }
     },
     conditionalDrag: {
       value: function conditionalDrag(event){
-        console.log('conditional drag %s: %s', this.localName, this._dragging);
+        // console.log('conditional drag %s: %s', this.localName, this._dragging);
         if (this._dragging){
           this.dX = event.clientX - this.lastDragX;
           this.dY = event.clientY - this.lastDragY;
@@ -211,9 +213,13 @@
         // Would be nice to use templates for this, one of the casualties of killing the
         // declarative syntax for Custom Elements
         this.shadow = this.createShadowRoot();
-        var value = this.getAttribute('value') || '';
-        this.shadow.innerHTML = '<input type="number" value="' + value + '" />';
-        this._value = parseInt(value) || 0;
+        var value = this.getAttribute('value') || 0;
+        var min = parseInt(this.getAttribute('min'), 10) || 0;
+        var max = parseInt(this.getAttribute('max'), 10) || 100;
+        this.shadow.innerHTML = '<input type="number" min="' + min + '" max="' + max + '" />';
+        this._min = min;
+        this._max = max;
+        this.value  = value;
         var self = this;
         this.shadow.firstElementChild.addEventListener('change', function(event){
           self.value = parseInt(event.target.value, 10);
@@ -235,8 +241,11 @@
         return this._value;
       },
       set: function(value){
-        var intValue = parseInt(value, 10);
+        var intValue = parseInt(value, 10) || this._value || 0;
+        intValue = Math.max(this._min, intValue);
+        intValue = Math.min(this._max, intValue);
         if (intValue !== this._value){
+          if (Number.isNaN(intValue)) return;
           this._value = intValue;
           this.shadow.firstElementChild.value = intValue;
           this.updateChannel('value', intValue);
@@ -246,8 +255,6 @@
     drag: {
       value: function drag(event, detail, sender){
         // console.log('dragging %s', this.localName);
-        // should support min and max here
-        // console.log(this.value + ' += ' + this.dX);
         this.value += this.dX;
       }
     }
@@ -286,7 +293,7 @@
         return this._value;
       },
       set: function(value){
-        var intValue = parseInt(value, 10);
+        var intValue = parseInt(value, 10) || this._value || 0;
         if (this._value !== intValue){
           this._value = intValue;
           this.shadow.firstElementChild.value = intValue;
@@ -329,7 +336,7 @@
         // configure drag control
         this.setAttribute('touch-action', 'pan-x');
         this.color = this.getAttribute('color');
-        this.height = parseInt(this.getAttribute('height'), 10) || 100;
+        this.height = this.getAttribute('height') || 100;
       }
     },
     attributeChangedCallback: {
@@ -354,7 +361,7 @@
         return this._height;
       },
       set: function(value){
-        var intValue = parseInt(value, 10);
+        var intValue = parseInt(value, 10) || this._height || 0;
         if (this._height !== intValue){
           this._height = intValue;
           this.shadow.firstElementChild.style.height = value + '%';
