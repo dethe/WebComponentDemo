@@ -7,7 +7,7 @@
     <!-- temporary polyfill, used until browsers fully implement web components -->
     <script src="platform.min.js"></script>
     <script src="channel.js"></script>
-    <script src="waterbear-components.js"></script>
+    <script src="example-components.js"></script>
     <style>
         body{
             opacity: 0;
@@ -20,6 +20,19 @@
             background-color: #CDE;
             float: right;
             margin-right: 80px;
+        }
+        .numbers{
+            width: 150px;
+            float: left;
+            margin-left: 80px;
+        }
+        .ranges{
+            width: 300px;
+            float: left;
+            margin-left: 40px;
+        }
+        p{
+            line-height: 18px;
         }
     </style>
     <script>
@@ -34,23 +47,46 @@
 
 	<h1>Widgets - testing for web components</h1>
 
+    <p>This is an example of how components can be built using only the parts of Polymer that are polyfills for functionality the browsers will eventually provide. So of the three JavaScript files included, the <code>platform.min.js</code> can be expected to go away in the future.</p>
+
+    <p>The <code>channel.js</code> file is not specific to web components, but is a minimal implementation of bi-directional channels (useful as an alternative to events). This is used by the <code>example-components.js</code> file, which actually defines the components used. The Polymer components (built on top of platform, containing extensions which are not part of any standard) have their own channel mechanism, but it is only useful between Polymer components internally, while this implementation can be used generally between components and even between components and regular HTML elements.</p>
+
+    <p>The <code>example-components.js</code> has three main sections. The first defined some utility functions which are namespaced and kept in the current closure for simplicity and to prevent namespace pollution. If we started having multiple files with components we could move these utilities to their own file. The second section is for base components. These, EXElementProto and EXDraggableProto, are created as prototypes, but are not registered as custom elements and cannot be instantiated. The third section is where we have elements which can actually be instantiated and used: EXNumberInput, EXRangeInput, and EXBarGraph.</p>
+
+    <p>The reason for breaking it up like this is to demonstrate how components can be built up, not only from other components, but from re-usable bits of code and more-or-less as mixins. Instead of the base EXElement, we could have an EXChannelable. While JavaScript does not have multiple inheritance, it is relatively straightforward to merge the prototypes of several mixins to get a component that inherits from all of them.</p>
+
+    <p>The example below uses the three instantiable components, channels, and Pointer Events to connect the various widgets together responsively.</p>
+
+    <hr />
+   
+    <h2>Try changing values or dragging on number inputs</h2>
+
     <div class="graph">
-        <wb-bar-graph channels="green:height" color="green"><span class="label">A</span></wb-bar-graph>
-        <wb-bar-graph channels="blue:height" color="blue"><span class="label">B</span></wb-bar-graph>
-        <wb-bar-graph channels="orange:height" color="orange"><span class="label">C</span></wb-bar-graph>
+        <ex-bar-graph channels="green:height" color="green"><span class="label">A</span></ex-bar-graph>
+        <ex-bar-graph channels="blue:height" color="blue"><span class="label">B</span></ex-bar-graph>
+        <ex-bar-graph channels="orange:height" color="orange"><span class="label">C</span></ex-bar-graph>
     </div>
 
-    <h2>Number inputs, try changing values, dragging on number or graph bar</h2>
-    <p>A <wb-number-input channels="green:value" min="0" max="100"/></p>
-    <p>B <wb-number-input channels="blue:value" min="0" max="100"/></p>
-    <p>C <wb-number-input channels="orange:value" min="0" max="100"/></p>
-    <hr />
-    <p>A <wb-range-input value="10" channels="green:value" min="0" max="100" /></p>
-    <p>B <wb-range-input value="20" channels="blue:value" min="0" max="100" /></p>
-    <p>C <wb-range-input value="30" channels="orange:value" min="0" max="100" /></p>
+    <div class="numbers">
+        <p>A <ex-number-input channels="green:value" min="0" max="100"/></p>
+        <p>B <ex-number-input channels="blue:value" min="0" max="100"/></p>
+        <p>C <ex-number-input channels="orange:value" min="0" max="100"/></p>
+    </div>
+    <div class="ranges">
+        <p>A <ex-range-input value="10" channels="green:value" min="0" max="100" /></p>
+        <p>B <ex-range-input value="20" channels="blue:value" min="0" max="100" /></p>
+        <p>C <ex-range-input value="30" channels="orange:value" min="0" max="100" /></p>
+    </div>
 
     <hr style="clear:both" />
 
+    <h2>Areas for further research</h2>
+
+    <ul>
+        <li>I think the Flathead-style updates could be implemented similarly to the channel updates (I don't know how much complexity the animation adds), but it would be interesting to have them both as mix-ins and be able to switch between them</li>
+        <li>One of the polyfills is for HTML Includes, so we could embed our JavaScript and HTML Templates in an HTML page that was included. The main advantage of this is that we can use templates, but that's a pretty good advantage.</li>
+        <li>The input widgets are here are defining new widgets which happen to be implemented in their Shadow DOM by HTML5 inputs. It is also possible to extend HTML elements, but the syntax is different. Instead of <code>&lt;ex-number-input&gt;</code> we would use <code>&lt;input type="number" is="ex-number_input"&gt;</code>. I kind of like having the custom components as the element name, but extended components would probably be simpler to implement and have fewer sharp edges to go awry.</li>
+    </ul>
 
 </body>
 </html>

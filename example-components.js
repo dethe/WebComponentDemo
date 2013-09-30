@@ -1,6 +1,17 @@
 // waterbear components
 (function(){
-  var wb = {
+
+  /*****************************************
+   *
+   * UTILITIES
+   *
+   * These are not specific to web components
+   * but are kept in the closure for now to 
+   * avoid polluting the globals.
+   *
+   *****************************************/
+
+  var ex = {
     parseChannels: function parseChannels(channelstring){
       var updatedChannels = {};
       channelpairs = channelstring.toString().split(',').forEach(function(textpair){
@@ -47,17 +58,21 @@
     }
   }
 
-  /*
-    We are creating a pattern language here, where all the componetns work togehter
+  /***********************************************
+   *
+   * BASE COMPONENTS
+   *
+   * We are creating a pattern language here, where all the componetns work together
+   *
+   * EXElementProto is the root element that defines things like channels for pub/sub, most of the
+   * other elements would be expected to extend it.
+   *
+   * We don't call document.register() for EXElementProto or EXElementbecause it is not intended
+   * to be instantiated directly, but used as a building block for other elements.
+   * 
+   ***************************************************/
 
-    This is the root element that defines things like channels for pub/sub, most of the
-    other elements would be expected to extend it.
-
-    We don't call document.register() for WBElementProto because it is not intended
-    to be instantiated directly, but used as a building block for other elements.
-  */
-
-  var WBElementProto = Object.create(HTMLElement.prototype, {
+  var EXElementProto = Object.create(HTMLElement.prototype, {
     createdCallback: {
       value: function createdCallback(){
         console.log('%s created', this.localName);
@@ -84,7 +99,7 @@
     }, 
     channels: {
       get: function(){
-        return wb.unparseChannels(this._channelset);
+        return ex.unparseChannels(this._channelset);
       },
       set: function(channels){
         // unsubscribe to old channels
@@ -92,7 +107,7 @@
         for (propertyname in this._channelset){
           channel.off(this._channelset[propertyname], this);
         }
-        this._channelset = wb.parseChannels(channels);
+        this._channelset = ex.parseChannels(channels);
         // subscribe to new channels
         for (propertyname in this._channelset){
           channel.on(this._channelset[propertyname], this);
@@ -108,7 +123,7 @@
       value: function onChannel(channelname, data){
         for (propertyname in this._channelset){
           if (this._channelset[propertyname] === channelname){
-            wb.update(this, propertyname, data);
+            ex.update(this, propertyname, data);
           }
         }
       }
@@ -127,14 +142,14 @@
     }
   });
 
-  /* WBDraggableProto is another base object used to build other elements,
+  /* EXDraggableProto is another base object used to build other elements,
      and is not intended to be instntiated directly.
   */
 
-  var WBDraggableProto = Object.create(WBElementProto, {
+  var EXDraggableProto = Object.create(EXElementProto, {
     createdCallback: {
       value: function createdCallback(){
-        WBElementProto.createdCallback.call(this);
+        EXElementProto.createdCallback.call(this);
         // initialize pointer events
         this.setAttribute('touch-action', 'none');
         this.addEventListener('pointerdown', this.startDrag.bind(this));
@@ -145,17 +160,17 @@
     },
     // enteredDocumentCallback: {
     //   value: function enteredDocumentCallback(){
-    //     WBElementProto.enteredDocumentCallback.call(this);
+    //     EXElementProto.enteredDocumentCallback.call(this);
     //   }
     // },
     // leftDocumentCallback: {
     //   value: function leftDocumentCallback(){
-    //     WBElementProto.leftDocumentCallback.call(this);
+    //     EXElementProto.leftDocumentCallback.call(this);
     //   }
     // },
     // attributeChangedCallback: {
     //   value: function attributeChangedCallback(attrName){
-    //     WBElementProto.AttributeChangedCallback.call(this, attrName);
+    //     EXElementProto.AttributeChangedCallback.call(this, attrName);
     //   }
     // }, 
     startDrag: {
@@ -206,10 +221,10 @@
 
   /* Simple extension of an input field */
 
-  var WBNumberInputProto = Object.create(WBDraggableProto, {
+  var EXNumberInputProto = Object.create(EXDraggableProto, {
     createdCallback: {
       value: function createdCallback(){
-        WBDraggableProto.createdCallback.call(this);
+        EXDraggableProto.createdCallback.call(this);
         // Would be nice to use templates for this, one of the casualties of killing the
         // declarative syntax for Custom Elements
         this.shadow = this.createShadowRoot();
@@ -230,7 +245,7 @@
     },
     attributeChangedCallback: {
       value: function attributeChangedCallback(attrName){
-        WBDraggableProto.attributeChangedCallback.call(this, attrName);
+        EXDraggableProto.attributeChangedCallback.call(this, attrName);
         if (attrName === 'value'){
           this.value = parseInt(value);
         }
@@ -260,14 +275,14 @@
     }
   });
 
-  document.WBNumberInput = document.register('wb-number-input', {prototype: WBNumberInputProto});
+  document.EXNumberInput = document.register('ex-number-input', {prototype: EXNumberInputProto});
 
   /* Simple extension of an input field */
 
-  var WBRangeInputProto = Object.create(WBElementProto, {
+  var EXRangeInputProto = Object.create(EXElementProto, {
     createdCallback: {
       value: function createdCallback(){
-        WBElementProto.createdCallback.call(this);
+        EXElementProto.createdCallback.call(this);
         this.shadow = this.createShadowRoot();
         var value = this.getAttribute('value') || '';
         var max = this.getAttribute('max') || 100;
@@ -282,7 +297,7 @@
     },
     attributeChangedCallback: {
       value: function attributeChangedCallback(attrName){
-        WBDraggableProto.AttributeChangedCallback.call(this, attrName);
+        EXDraggableProto.AttributeChangedCallback.call(this, attrName);
         if (attrName === 'value'){
           this.value = this.getAttribute('value');
         }
@@ -303,14 +318,14 @@
     }
   });
 
-  document.WBRangeInput = document.register('wb-range-input', {prototype: WBRangeInputProto});
+  document.EXRangeInput = document.register('ex-range-input', {prototype: EXRangeInputProto});
 
 
 
-  var WBBarGraphProto = Object.create(WBDraggableProto, {
+  var EXBarGraphProto = Object.create(EXDraggableProto, {
     createdCallback: {
       value: function createdCallback(){
-        WBElementProto.createdCallback.call(this);
+        EXElementProto.createdCallback.call(this);
         this.shadow = this.createShadowRoot();
         this.shadow.innerHTML = '<div></div>';
         this.impl.style.display = 'inline-block';
@@ -341,7 +356,7 @@
     },
     attributeChangedCallback: {
       value: function attributeChangedCallback(attrName){
-        WBElementProto.attributeChangedCallback.call(this, attrName);
+        EXElementProto.attributeChangedCallback.call(this, attrName);
         switch(attrName){
           case 'height': this.height = parseInt(this.getAttribute('height'), 10); break;
           case 'color': this.color = this.getAttribute('color'); break;
@@ -371,11 +386,11 @@
     },
     drag: {
       value: function drag(event, detail, sender){
-        WBDraggableProto.prototype.drag.call(this, event, detail, sender);
+        EXDraggableProto.prototype.drag.call(this, event, detail, sender);
         this.height -= this.dY;
       }
     }
   });
 
-  document.WBBarGraph = document.register('wb-bar-graph', {prototype: WBBarGraphProto });
+  document.EXBarGraph = document.register('ex-bar-graph', {prototype: EXBarGraphProto });
 })();
